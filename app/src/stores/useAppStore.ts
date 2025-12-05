@@ -61,6 +61,8 @@ interface ImageActions {
 interface UIState {
   settingsOpen: boolean;
   extendPopupOpen: boolean;
+  showEdges: boolean;
+  edgeOpacity: number;
 }
 
 interface UIActions {
@@ -68,6 +70,8 @@ interface UIActions {
   closeSettings: () => void;
   openExtendPopup: () => void;
   closeExtendPopup: () => void;
+  toggleEdges: () => void;
+  setEdgeOpacity: (opacity: number) => void;
 }
 
 export interface AppStore extends TimerState, TimerActions, ImageState, ImageActions, UIState, UIActions {}
@@ -177,12 +181,16 @@ export const useAppStore = create<AppStore>((set, get) => ({
   // UI State
   settingsOpen: false,
   extendPopupOpen: false,
+  showEdges: false,
+  edgeOpacity: 0.6,
 
   // UI Actions
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
   openExtendPopup: () => set({ extendPopupOpen: true }),
   closeExtendPopup: () => set({ extendPopupOpen: false }),
+  toggleEdges: () => set((state) => ({ showEdges: !state.showEdges })),
+  setEdgeOpacity: (opacity: number) => set({ edgeOpacity: opacity }),
 }));
 
 // ============================================
@@ -258,5 +266,15 @@ export function useExtendPopup() {
     open: state.openExtendPopup,
     close: state.closeExtendPopup,
     extend: state.extend,
+  })));
+}
+
+/** Hook für Edge Overlay */
+export function useEdgeOverlay() {
+  return useAppStore(useShallow((state) => ({
+    showEdges: state.showEdges,
+    opacity: state.edgeOpacity,
+    toggle: state.toggleEdges,
+    setOpacity: state.setEdgeOpacity,
   })));
 }

@@ -5,6 +5,7 @@ import { timerOptions } from "../hooks/useTimer";
 import type { ImageMode } from "./ImageDisplay";
 import { imageModes } from "./ImageDisplay";
 import type { ImageCategory } from "../services/api";
+import { useEdgeOverlay } from "../stores/useAppStore";
 
 // Kategorie-Optionen (Labels für UI)
 const categoryOptions: { value: ImageCategory; label: string }[] = [
@@ -33,6 +34,9 @@ export function SettingsPopup({
   category,
   onSave,
 }: SettingsPopupProps) {
+  // Edge overlay state (directly from store, not part of save flow)
+  const { showEdges, opacity, toggle: toggleEdges, setOpacity } = useEdgeOverlay();
+
   // Local state for editing
   const [localTimer, setLocalTimer] = useState(selectedTimer);
   const [localImageMode, setLocalImageMode] = useState(imageMode);
@@ -153,6 +157,47 @@ export function SettingsPopup({
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Edge Overlay Toggle */}
+        <div className="mb-6">
+          <label className="text-white/60 text-sm mb-2 block">Drawing Aids</label>
+          <button
+            onClick={toggleEdges}
+            className={`w-full py-3 px-4 text-sm rounded-lg transition-colors flex items-center justify-between cursor-pointer ${
+              showEdges
+                ? "bg-indigo-600 text-white"
+                : "bg-zinc-800 text-white/80 hover:bg-zinc-700"
+            }`}
+          >
+            <span>Show Edge Overlay</span>
+            <span className={`w-10 h-6 rounded-full relative transition-colors ${
+              showEdges ? "bg-indigo-400" : "bg-zinc-600"
+            }`}>
+              <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                showEdges ? "left-5" : "left-1"
+              }`} />
+            </span>
+          </button>
+          
+          {/* Opacity Slider */}
+          {showEdges && (
+            <div className="mt-3">
+              <div className="flex justify-between text-xs text-white/50 mb-1">
+                <span>Opacity</span>
+                <span>{Math.round(opacity * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.1"
+                value={opacity}
+                onChange={(e) => setOpacity(parseFloat(e.target.value))}
+                className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+              />
+            </div>
+          )}
         </div>
 
         {/* Extend Timer Prompt Toggle */}

@@ -1,4 +1,6 @@
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { EdgeOverlay } from "./EdgeOverlay";
+import { useEdgeOverlay } from "../stores/useAppStore";
 
 export type ImageMode = "cover" | "contain" | "balanced";
 
@@ -24,6 +26,8 @@ type ImageDisplayProps = {
 };
 
 export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading }: ImageDisplayProps) {
+  const { showEdges, opacity } = useEdgeOverlay();
+
   return (
     <div className="relative w-full h-full overflow-hidden bg-linear-to-t from-black  bg-zinc-900 p-2">
       {/* Loading Overlay */}
@@ -44,11 +48,18 @@ export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading
           wrapperStyle={{ width: "100%", height: "100%" }}
           contentStyle={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
         >
-          <img
-            src={imageUrl}
-            alt={imageAlt}
-            className="max-w-full max-h-full object-contain  rounded-md"
-          />
+          <div className="relative">
+            <img
+              src={imageUrl}
+              alt={imageAlt}
+              className={`max-w-full max-h-full object-contain rounded-md transition-opacity ${
+                showEdges ? "opacity-10" : ""
+              }`}
+            />
+            {showEdges && (
+              <EdgeOverlay imageUrl={imageUrl} opacity={opacity} />
+            )}
+          </div>
         </TransformComponent>
       </TransformWrapper>
     </div>

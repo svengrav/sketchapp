@@ -11,10 +11,10 @@ export function ProgressBar({ progress, timeLeft }: ProgressBarProps) {
   const remaining = 100 - progress;
   
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/30">
+    <div className="h-8 flex relative flex-col-reverse p-1.5">
       <div
-        className="h-full bg-indigo-600 transition-all duration-1000 ease-linear ml-auto"
-        style={{ width: `${remaining}%` }}
+        className="h-full bg-indigo-800 transition-all duration-1000 ease-linear bg-linear-to-l from-indigo-500 "
+        style={{ width: `${remaining}%`}}
       />
       {/* Timer Overlay */}
       <div className="absolute inset-0 flex items-center justify-center">

@@ -25,7 +25,7 @@ export function Controls({
       {/* Start/Pause Button */}
       <button
         onClick={isRunning ? onPause : onStart}
-        className="bg-white/90 hover:bg-white text-black p-2 rounded-lg transition-colors"
+        className="bg-zinc-50  text-black hover:bg-white p-1 rounded-md transition-colors"
         title={isRunning ? "Pause" : "Start"}
       >
         {isRunning ? (
@@ -38,7 +38,7 @@ export function Controls({
       {/* Skip Button */}
       <button
         onClick={onSkip}
-        className="bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-colors"
+        className="bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
         title="Next Image"
       >
         <ForwardIcon className="w-5 h-5" />

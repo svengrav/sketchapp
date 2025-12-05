@@ -1,4 +1,5 @@
-import { Cog6ToothIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { useState, useEffect } from "react";
+import { Cog6ToothIcon, XMarkIcon, CheckIcon } from "@heroicons/react/24/solid";
 import type { TimerOption } from "../hooks/useTimer";
 import { timerOptions } from "../hooks/useTimer";
 import type { ImageMode } from "./ImageDisplay";
@@ -8,37 +9,65 @@ type SettingsPopupProps = {
   isOpen: boolean;
   onClose: () => void;
   selectedTimer: TimerOption;
-  onTimerChange: (option: TimerOption) => void;
   imageMode: ImageMode;
-  onImageModeChange: (mode: ImageMode) => void;
-  isRunning: boolean;
   showExtendPrompt: boolean;
-  onExtendPromptChange: (value: boolean) => void;
+  isRunning: boolean;
+  onSave: (settings: { timerSeconds: number; imageMode: ImageMode; showExtendPrompt: boolean }) => void;
 };
 
 export function SettingsPopup({
   isOpen,
   onClose,
   selectedTimer,
-  onTimerChange,
   imageMode,
-  onImageModeChange,
-  isRunning,
   showExtendPrompt,
-  onExtendPromptChange,
+  isRunning,
+  onSave,
 }: SettingsPopupProps) {
+  // Local state for editing
+  const [localTimer, setLocalTimer] = useState(selectedTimer);
+  const [localImageMode, setLocalImageMode] = useState(imageMode);
+  const [localExtendPrompt, setLocalExtendPrompt] = useState(showExtendPrompt);
+
+  // Reset local state when popup opens
+  useEffect(() => {
+    if (isOpen) {
+      setLocalTimer(selectedTimer);
+      setLocalImageMode(imageMode);
+      setLocalExtendPrompt(showExtendPrompt);
+    }
+  }, [isOpen, selectedTimer, imageMode, showExtendPrompt]);
+
   if (!isOpen) return null;
+
+  const handleSave = () => {
+    onSave({
+      timerSeconds: localTimer.seconds,
+      imageMode: localImageMode,
+      showExtendPrompt: localExtendPrompt,
+    });
+    onClose();
+  };
+
+  const handleCancel = () => {
+    onClose();
+  };
+
+  const hasChanges = 
+    localTimer.seconds !== selectedTimer.seconds ||
+    localImageMode !== imageMode ||
+    localExtendPrompt !== showExtendPrompt;
 
   return (
     <>
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 z-40"
-        onClick={onClose}
+        onClick={handleCancel}
       />
       
       {/* Popup */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-900 rounded-xl p-6 z-50 w-[90vw] max-w-sm shadow-xl">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 rounded-xl p-6 z-50 w-[90vw] max-w-sm shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-white text-lg font-semibold flex items-center gap-2">
@@ -46,7 +75,7 @@ export function SettingsPopup({
             Settings
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="text-white/60 hover:text-white p-1"
           >
             <XMarkIcon className="w-6 h-6" />
@@ -60,12 +89,12 @@ export function SettingsPopup({
             {timerOptions.map((option) => (
               <button
                 key={option.seconds}
-                onClick={() => onTimerChange(option)}
+                onClick={() => setLocalTimer(option)}
                 disabled={isRunning}
                 className={`py-2 px-1 text-sm rounded-lg transition-colors disabled:opacity-50 ${
-                  selectedTimer.seconds === option.seconds
+                  localTimer.seconds === option.seconds
                     ? "bg-indigo-600 text-white"
-                    : "bg-gray-800 text-white/80 hover:bg-gray-700"
+                    : "bg-zinc-800 text-white/80 hover:bg-zinc-700"
                 }`}
               >
                 {option.label}
@@ -84,11 +113,11 @@ export function SettingsPopup({
             {imageModes.map((mode) => (
               <button
                 key={mode.value}
-                onClick={() => onImageModeChange(mode.value)}
+                onClick={() => setLocalImageMode(mode.value)}
                 className={`py-2 px-3 text-sm rounded-lg transition-colors ${
-                  imageMode === mode.value
+                  localImageMode === mode.value
                     ? "bg-indigo-600 text-white"
-                    : "bg-gray-800 text-white/80 hover:bg-gray-700"
+                    : "bg-zinc-800 text-white/80 hover:bg-zinc-700"
                 }`}
               >
                 {mode.label}
@@ -98,24 +127,45 @@ export function SettingsPopup({
         </div>
 
         {/* Extend Timer Prompt Toggle */}
-        <div>
+        <div className="mb-6">
           <label className="text-white/60 text-sm mb-2 block">When Timer Ends</label>
           <button
-            onClick={() => onExtendPromptChange(!showExtendPrompt)}
+            onClick={() => setLocalExtendPrompt(!localExtendPrompt)}
             className={`w-full py-3 px-4 text-sm rounded-lg transition-colors flex items-center justify-between ${
-              showExtendPrompt
+              localExtendPrompt
                 ? "bg-indigo-600 text-white"
-                : "bg-gray-800 text-white/80 hover:bg-gray-700"
+                : "bg-zinc-800 text-white/80 hover:bg-zinc-700"
             }`}
           >
             <span>Ask to extend time</span>
             <span className={`w-10 h-6 rounded-full relative transition-colors ${
-              showExtendPrompt ? "bg-indigo-400" : "bg-gray-600"
+              localExtendPrompt ? "bg-indigo-400" : "bg-zinc-600"
             }`}>
               <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                showExtendPrompt ? "left-5" : "left-1"
+                localExtendPrompt ? "left-5" : "left-1"
               }`} />
             </span>
+          </button>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleCancel}
+            className="flex-1 py-3 px-4 text-sm rounded-lg bg-zinc-800 text-white/80 hover:bg-zinc-700 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className={`flex-1 py-3 px-4 text-sm rounded-lg transition-colors flex items-center justify-center gap-2 ${
+              hasChanges
+                ? "bg-indigo-600 text-white hover:bg-zinc-500"
+                : "bg-indigo-600/50 text-white/50 cursor-default"
+            }`}
+          >
+            <CheckIcon className="w-4 h-4" />
+            Save
           </button>
         </div>
       </div>

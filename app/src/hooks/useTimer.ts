@@ -15,11 +15,21 @@ export const timerOptions: TimerOption[] = [
 
 type UseTimerProps = {
   defaultOption?: TimerOption;
+  initialSeconds?: number;
   onComplete: () => void;
 };
 
-export function useTimer({ defaultOption = timerOptions[2], onComplete }: UseTimerProps) {
-  const [selectedTimer, setSelectedTimer] = useState<TimerOption>(defaultOption);
+export function useTimer({ defaultOption, initialSeconds, onComplete }: UseTimerProps) {
+  // Find matching timer option for initialSeconds, or use default
+  const getInitialOption = (): TimerOption => {
+    if (initialSeconds) {
+      const match = timerOptions.find(t => t.seconds === initialSeconds);
+      if (match) return match;
+    }
+    return defaultOption || timerOptions[2];
+  };
+
+  const [selectedTimer, setSelectedTimer] = useState<TimerOption>(getInitialOption);
   const [timeLeft, setTimeLeft] = useState(selectedTimer.seconds);
   const [isRunning, setIsRunning] = useState(false);
 

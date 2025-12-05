@@ -1,5 +1,5 @@
-import { PaintBrushIcon } from "@heroicons/react/24/solid";
 import { Controls } from "./Controls";
+import { Logo } from "./Logo";
 
 type HeaderProps = {
   isRunning: boolean;
@@ -17,10 +17,10 @@ export function Header({
   onSettingsOpen,
 }: HeaderProps) {
   return (
-    <header className="flex items-center justify-between px-3 py-2 bg-black/80 shrink-0">
+    <header className="flex items-center justify-between px-3 py-4 bg-black/80 shrink-0 border-b border-zinc-700">
       {/* App Title */}
-      <div className="text-white text-sm font-semibold flex items-center gap-1.5">
-        <PaintBrushIcon className="w-4 h-4 text-indigo-400" />
+      <div className="text-white text-md font-semibold flex items-center gap-1.5 cursor-pointer">
+        <Logo classNames="w-6 h-6" />
         <span>Sketch App</span>
       </div>
 

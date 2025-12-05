@@ -13,21 +13,8 @@ export function Footer({ image, progress, timeLeft }: FooterProps) {
   const remaining = 100 - progress;
 
   return (
-    <footer className="bg-black/80 shrink-0">
-      {/* Progress Bar */}
-      <div className="relative h-6 bg-black/30">
-        <div
-          className="h-full bg-indigo-600 transition-all duration-1000 ease-linear ml-auto"
-          style={{ width: `${remaining}%` }}
-        />
-        {/* Timer Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="flex items-center gap-1 text-white font-mono text-sm">
-            <ClockIcon className="w-3 h-3" />
-            {formatTime(timeLeft)}
-          </div>
-        </div>
-      </div>
+    <footer className="bg-black/80 shrink-0 border-t border-zinc-700">
+
 
       {/* Image Info & Photographer Credit */}
       <div className="px-3 py-1.5 flex items-center justify-between gap-2 text-xs">

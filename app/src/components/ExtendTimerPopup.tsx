@@ -21,7 +21,7 @@ export function ExtendTimerPopup({
       <div className="fixed inset-0 bg-black/70 z-40" />
       
       {/* Popup */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-900 rounded-xl p-6 z-50 w-[90vw] max-w-xs shadow-xl text-center">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 rounded-xl p-6 z-50 w-[90vw] max-w-xs shadow-xl text-center">
         <ClockIcon className="w-12 h-12 text-indigo-500 mx-auto mb-4" />
         
         <h2 className="text-white text-lg font-semibold mb-2">
@@ -42,7 +42,7 @@ export function ExtendTimerPopup({
           
           <button
             onClick={onSkip}
-            className="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-white/80 py-3 px-4 rounded-lg transition-colors"
+            className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white/80 py-3 px-4 rounded-lg transition-colors"
           >
             <ForwardIcon className="w-5 h-5" />
             Next Image

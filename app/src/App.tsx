@@ -3,11 +3,14 @@ import { useTimer } from "./hooks/useTimer";
 import { useSketchImage } from "./hooks/useSketchImage";
 import { ImageDisplay } from "./components/ImageDisplay";
 import type { ImageMode } from "./components/ImageDisplay";
-import { Controls } from "./components/Controls";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import { SettingsPopup } from "./components/SettingsPopup";
 
 function App() {
   const { currentImage, isLoading, error, loadNewImage } = useSketchImage();
   const [imageMode, setImageMode] = useState<ImageMode>("balanced");
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { timeLeft, isRunning, progress, start, pause, reset, selectedTimer, setDuration } = useTimer({
     onComplete: loadNewImage,
   });
@@ -43,20 +46,42 @@ function App() {
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-black">
+    <div className="w-screen h-screen flex flex-col bg-black">
       {currentImage && (
         <>
-          <ImageDisplay image={currentImage} progress={progress} isLoading={isLoading} imageMode={imageMode} />
-          <Controls
-            selectedTimer={selectedTimer}
-            onTimerChange={setDuration}
+          <Header
+            image={currentImage}
             isRunning={isRunning}
-            timeLeft={timeLeft}
             onStart={start}
             onPause={pause}
             onSkip={handleSkip}
+            onSettingsOpen={() => setSettingsOpen(true)}
+          />
+          
+          <main className="flex-1 min-h-0">
+            <ImageDisplay
+              imageUrl={currentImage.url}
+              imageAlt={currentImage.city}
+              imageId={currentImage.id}
+              imageMode={imageMode}
+              isLoading={isLoading}
+            />
+          </main>
+          
+          <Footer
+            image={currentImage}
+            progress={progress}
+            timeLeft={timeLeft}
+          />
+
+          <SettingsPopup
+            isOpen={settingsOpen}
+            onClose={() => setSettingsOpen(false)}
+            selectedTimer={selectedTimer}
+            onTimerChange={setDuration}
             imageMode={imageMode}
             onImageModeChange={setImageMode}
+            isRunning={isRunning}
           />
         </>
       )}

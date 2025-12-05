@@ -16,7 +16,6 @@ const DEMO_IMAGE: SketchImage = {
   city: "Paris (Demo)",
   photographer: "Demo Photographer",
   photographerUrl: "https://unsplash.com",
-  cachedAt: Date.now(),
 };
 
 function App() {
@@ -36,8 +35,7 @@ function App() {
     setIsLoading(true);
     setError(null);
     try {
-      const excludeId = currentImage?.id;
-      const image = await fetchRandomImage(excludeId);
+      const image = await fetchRandomImage(currentImage?.id);
       setCurrentImage(image);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load image");

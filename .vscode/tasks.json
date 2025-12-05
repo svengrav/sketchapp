@@ -1,0 +1,82 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "API: Start (Deno)",
+      "type": "shell",
+      "command": "deno",
+      "args": ["task", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/api",
+        "env": {
+          "PORT": "8000"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*)$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*$",
+          "endsPattern": "^Listening on.*$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "sketchapp"
+      }
+    },
+    {
+      "label": "App: Start (Vite)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/app"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*)$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*$",
+          "endsPattern": "^.*Local:.*$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "sketchapp"
+      }
+    },
+    {
+      "label": "Start All (API + App)",
+      "dependsOn": ["API: Start (Deno)", "App: Start (Vite)"],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Docker: Build & Start",
+      "type": "shell",
+      "command": "bash",
+      "args": ["docker.bash"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { fetchRandomImage } from "./services/api";
 import type { SketchImage } from "./services/api";
 import { useTimer, timerOptions } from "./hooks/useTimer";
@@ -25,6 +25,10 @@ function App() {
   const [selectedTimer, setSelectedTimer] = useState<TimerOption>(
     timerOptions[2] // 5 Min default
   );
+  
+  // Ref für aktuelle Image-ID (verhindert useCallback dependency loop)
+  const currentImageIdRef = useRef<string | undefined>(undefined);
+  currentImageIdRef.current = currentImage?.id;
 
   const loadNewImage = useCallback(async () => {
     if (USE_DEMO_MODE) {
@@ -35,21 +39,21 @@ function App() {
     setIsLoading(true);
     setError(null);
     try {
-      const image = await fetchRandomImage(currentImage?.id);
+      const image = await fetchRandomImage(currentImageIdRef.current);
       setCurrentImage(image);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load image");
     } finally {
       setIsLoading(false);
     }
-  }, [currentImage?.id]);
+  }, []); // Keine Dependencies mehr - nutzt Ref
 
-  // Initiales Bild laden
+  // Initiales Bild laden (nur einmal)
   useEffect(() => {
     if (!USE_DEMO_MODE) {
       loadNewImage();
     }
-  }, [loadNewImage]);
+  }, []); // Leere Dependencies - nur beim Mount
 
   const { timeLeft, isRunning, progress, start, pause, reset } = useTimer({
     duration: selectedTimer.seconds,

@@ -236,7 +236,11 @@ async function fetchFromUnsplash(): Promise<UnsplashResult> {
 // Bild-Strategie: API first, dann Fallback zu Table
 // ============================================
 
+const AZURE_ENABLED = !!AZURE_STORAGE_CONNECTION_STRING;
+
 async function getRandomImageFromTable(excludeId?: string): Promise<SketchImage | null> {
+  if (!AZURE_ENABLED) return null;
+  
   const images = await getAllImagesFromTable();
   const available = excludeId ? images.filter(img => img.id !== excludeId) : images;
   
@@ -249,17 +253,21 @@ async function getImage(excludeId?: string): Promise<{ image: SketchImage | null
   const result = await fetchFromUnsplash();
   
   if (result.success) {
-    // Speichere in Table Storage
-    await saveImageToTable(result.image);
+    // Speichere in Table Storage (nur wenn Azure konfiguriert)
+    if (AZURE_ENABLED) {
+      await saveImageToTable(result.image);
+    }
     return { image: result.image, source: "unsplash" };
   }
   
-  // 2. Bei Rate Limit oder Fehler: Fallback zu Table
+  // 2. Bei Rate Limit oder Fehler: Fallback zu Table (nur wenn Azure konfiguriert)
   console.log(`Unsplash failed (${result.error}), falling back to table storage`);
-  const cachedImage = await getRandomImageFromTable(excludeId);
   
-  if (cachedImage) {
-    return { image: cachedImage, source: "cache" };
+  if (AZURE_ENABLED) {
+    const cachedImage = await getRandomImageFromTable(excludeId);
+    if (cachedImage) {
+      return { image: cachedImage, source: "cache" };
+    }
   }
   
   return { image: null, source: "none" };

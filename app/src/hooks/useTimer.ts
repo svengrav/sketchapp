@@ -33,6 +33,11 @@ export function useTimer({ defaultOption = timerOptions[2], onComplete }: UseTim
     setIsRunning(false);
   }, [duration]);
 
+  const extend = useCallback((seconds: number) => {
+    setTimeLeft((prev) => prev + seconds);
+    setIsRunning(true);
+  }, []);
+
   const setDuration = useCallback((option: TimerOption) => {
     setSelectedTimer(option);
     setTimeLeft(option.seconds);
@@ -60,7 +65,7 @@ export function useTimer({ defaultOption = timerOptions[2], onComplete }: UseTim
     return () => clearInterval(interval);
   }, [isRunning, duration, onComplete]);
 
-  return { timeLeft, isRunning, progress, start, pause, reset, selectedTimer, setDuration };
+  return { timeLeft, isRunning, progress, start, pause, reset, extend, selectedTimer, setDuration };
 }
 
 // Formatiere Sekunden zu MM:SS

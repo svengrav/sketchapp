@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useTimer } from "./hooks/useTimer";
 import { useSketchImage } from "./hooks/useSketchImage";
 import { ImageDisplay } from "./components/ImageDisplay";
@@ -6,14 +6,40 @@ import type { ImageMode } from "./components/ImageDisplay";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { SettingsPopup } from "./components/SettingsPopup";
+import { ExtendTimerPopup } from "./components/ExtendTimerPopup";
+
+const EXTEND_MINUTES = 2;
 
 function App() {
   const { currentImage, isLoading, error, loadNewImage } = useSketchImage();
   const [imageMode, setImageMode] = useState<ImageMode>("balanced");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { timeLeft, isRunning, progress, start, pause, reset, selectedTimer, setDuration } = useTimer({
-    onComplete: loadNewImage,
+  const [showExtendPrompt, setShowExtendPrompt] = useState(true);
+  const [extendPopupOpen, setExtendPopupOpen] = useState(false);
+
+  const handleTimerComplete = useCallback(() => {
+    if (showExtendPrompt) {
+      setExtendPopupOpen(true);
+    } else {
+      loadNewImage();
+    }
+  }, [showExtendPrompt, loadNewImage]);
+
+  const { timeLeft, isRunning, progress, start, pause, reset, extend, selectedTimer, setDuration } = useTimer({
+    onComplete: handleTimerComplete,
   });
+
+  const handleExtend = () => {
+    setExtendPopupOpen(false);
+    extend(EXTEND_MINUTES * 60);
+  };
+
+  const handleSkipFromPopup = () => {
+    setExtendPopupOpen(false);
+    loadNewImage();
+    reset();
+    start();
+  };
 
   const handleSkip = () => {
     loadNewImage();
@@ -82,6 +108,15 @@ function App() {
             imageMode={imageMode}
             onImageModeChange={setImageMode}
             isRunning={isRunning}
+            showExtendPrompt={showExtendPrompt}
+            onExtendPromptChange={setShowExtendPrompt}
+          />
+
+          <ExtendTimerPopup
+            isOpen={extendPopupOpen}
+            onExtend={handleExtend}
+            onSkip={handleSkipFromPopup}
+            extensionMinutes={EXTEND_MINUTES}
           />
         </>
       )}

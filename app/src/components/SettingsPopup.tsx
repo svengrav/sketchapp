@@ -12,6 +12,8 @@ type SettingsPopupProps = {
   imageMode: ImageMode;
   onImageModeChange: (mode: ImageMode) => void;
   isRunning: boolean;
+  showExtendPrompt: boolean;
+  onExtendPromptChange: (value: boolean) => void;
 };
 
 export function SettingsPopup({
@@ -22,6 +24,8 @@ export function SettingsPopup({
   imageMode,
   onImageModeChange,
   isRunning,
+  showExtendPrompt,
+  onExtendPromptChange,
 }: SettingsPopupProps) {
   if (!isOpen) return null;
 
@@ -74,7 +78,7 @@ export function SettingsPopup({
         </div>
 
         {/* Image Mode */}
-        <div>
+        <div className="mb-6">
           <label className="text-white/60 text-sm mb-2 block">Image Fit</label>
           <div className="grid grid-cols-3 gap-2">
             {imageModes.map((mode) => (
@@ -91,6 +95,28 @@ export function SettingsPopup({
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Extend Timer Prompt Toggle */}
+        <div>
+          <label className="text-white/60 text-sm mb-2 block">When Timer Ends</label>
+          <button
+            onClick={() => onExtendPromptChange(!showExtendPrompt)}
+            className={`w-full py-3 px-4 text-sm rounded-lg transition-colors flex items-center justify-between ${
+              showExtendPrompt
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-800 text-white/80 hover:bg-gray-700"
+            }`}
+          >
+            <span>Ask to extend time</span>
+            <span className={`w-10 h-6 rounded-full relative transition-colors ${
+              showExtendPrompt ? "bg-indigo-400" : "bg-gray-600"
+            }`}>
+              <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                showExtendPrompt ? "left-5" : "left-1"
+              }`} />
+            </span>
+          </button>
         </div>
       </div>
     </>

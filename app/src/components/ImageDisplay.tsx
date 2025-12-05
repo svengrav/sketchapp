@@ -1,5 +1,4 @@
-import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
-import { ArrowPathIcon } from "@heroicons/react/24/solid";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export type ImageMode = "cover" | "contain" | "balanced";
 
@@ -23,20 +22,6 @@ type ImageDisplayProps = {
   imageMode: ImageMode;
   isLoading?: boolean;
 };
-
-// Reset-Button Komponente (nutzt useControls Hook)
-function ResetButton() {
-  const { resetTransform } = useControls();
-  return (
-    <button
-      onClick={() => resetTransform()}
-      className="absolute bottom-4 right-4 bg-linear-120 hover:bg-black/70 text-white p-2 rounded-lg transition-colors z-20"
-      title="Reset View"
-    >
-      <ArrowPathIcon className="w-5 h-5" />
-    </button>
-  );
-}
 
 export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading }: ImageDisplayProps) {
   return (

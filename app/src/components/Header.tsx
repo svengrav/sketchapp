@@ -1,37 +1,15 @@
-import { Controls } from "./Controls";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { Logo } from "./Logo";
 
-type HeaderProps = {
-  isRunning: boolean;
-  onStart: () => void;
-  onPause: () => void;
-  onSkip: () => void;
-  onSettingsOpen: () => void;
-};
-
-export function Header({
-  isRunning,
-  onStart,
-  onPause,
-  onSkip,
-  onSettingsOpen,
-}: HeaderProps) {
+export function Header() {
   return (
-    <header className="flex items-center justify-between px-3 py-4 bg-black/80 shrink-0 border-b border-zinc-700">
+    <header className="flex items-center justify-between px-3 py-4 shrink-0 border-b border-zinc-700">
       {/* App Title */}
-      <div className="text-white text-md font-semibold flex items-center gap-1.5 cursor-pointer">
+      <div className="text-white text-md font-semibold flex items-center gap-1.5 cursor-pointer  m-auto">
         <Logo classNames="w-6 h-6" />
         <span>Sketch App</span>
       </div>
-
-      {/* Controls */}
-      <Controls
-        isRunning={isRunning}
-        onStart={onStart}
-        onPause={onPause}
-        onSkip={onSkip}
-        onSettingsOpen={onSettingsOpen}
-      />
+      <InformationCircleIcon className="w-7 h-7 text-white " />
     </header>
   );
 }

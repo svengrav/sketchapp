@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import type { TimerOption } from "./useTimer";
 import { timerOptions } from "./useTimer";
 import type { ImageMode } from "../components/ImageDisplay";
+import type { ImageCategory } from "../services/api";
 
 const STORAGE_KEY = "sketchapp-settings";
 
@@ -9,12 +10,14 @@ export interface AppSettings {
   timerSeconds: number;
   imageMode: ImageMode;
   showExtendPrompt: boolean;
+  category: ImageCategory;
 }
 
 const defaultSettings: AppSettings = {
   timerSeconds: 300, // 5 Min
   imageMode: "balanced",
   showExtendPrompt: true,
+  category: "cities",
 };
 
 function loadFromStorage(): AppSettings {

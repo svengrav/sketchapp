@@ -1,6 +1,5 @@
-import { useState, useCallback } from "react";
-import { useTimer, timerOptions } from "./hooks/useTimer";
-import { useSketchImage } from "./hooks/useSketchImage";
+import { useEffect, useCallback } from "react";
+import { useAppStore, selectProgress, timerOptions } from "./stores/useAppStore";
 import { useSettings } from "./hooks/useSettings";
 import { ImageDisplay } from "./components/ImageDisplay";
 import { Header } from "./components/Header";
@@ -12,53 +11,99 @@ import { ProgressBar } from "./components/ProgressBar";
 const EXTEND_MINUTES = 2;
 
 function App() {
-  const { currentImage, isLoading, error, loadNewImage } = useSketchImage();
   const { settings, saveSettings } = useSettings();
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [extendPopupOpen, setExtendPopupOpen] = useState(false);
+  
+  // Store state & actions
+  const {
+    isRunning,
+    timeLeft,
+    selectedTimer,
+    settingsOpen,
+    extendPopupOpen,
+    currentImage,
+    isImageLoading,
+    imageError,
+    start,
+    extend,
+    setDuration,
+    setCategory,
+    tick,
+    loadNewImage,
+    skip,
+    closeSettings,
+    openExtendPopup,
+    closeExtendPopup,
+  } = useAppStore();
+  
+  const progress = useAppStore(selectProgress);
 
-  const handleTimerComplete = useCallback(() => {
-    if (settings.showExtendPrompt) {
-      setExtendPopupOpen(true);
-    } else {
-      loadNewImage();
+  // Sync category from settings to store on mount and when settings change
+  useEffect(() => {
+    setCategory(settings.category);
+  }, [settings.category, setCategory]);
+
+  // Load initial image
+  useEffect(() => {
+    if (!currentImage && !isImageLoading) {
+      loadNewImage(settings.category);
     }
-  }, [settings.showExtendPrompt, loadNewImage]);
+  }, []);
 
-  const { timeLeft, isRunning, progress, start, pause, reset, extend, selectedTimer, setDuration } = useTimer({
-    onComplete: handleTimerComplete,
-    initialSeconds: settings.timerSeconds,
-  });
+  // Timer interval effect
+  useEffect(() => {
+    if (!isRunning) return;
 
-  const handleSaveSettings = (newSettings: { timerSeconds: number; imageMode: typeof settings.imageMode; showExtendPrompt: boolean }) => {
+    const interval = setInterval(() => {
+      const completed = tick();
+      if (completed) {
+        if (settings.showExtendPrompt) {
+          openExtendPopup();
+        } else {
+          loadNewImage();
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isRunning, settings.showExtendPrompt, loadNewImage, tick, openExtendPopup]);
+
+  // Initialize timer from settings
+  useEffect(() => {
+    const timerOption = timerOptions.find(t => t.seconds === settings.timerSeconds);
+    if (timerOption && timerOption.seconds !== selectedTimer.seconds) {
+      setDuration(timerOption);
+    }
+  }, []); // Only on mount
+
+  const handleSaveSettings = useCallback((newSettings: { timerSeconds: number; imageMode: typeof settings.imageMode; showExtendPrompt: boolean; category: typeof settings.category }) => {
+    const categoryChanged = newSettings.category !== settings.category;
     saveSettings(newSettings);
+    setCategory(newSettings.category);
+    
     // Update timer duration if changed
     const timerOption = timerOptions.find(t => t.seconds === newSettings.timerSeconds);
     if (timerOption && timerOption.seconds !== selectedTimer.seconds) {
       setDuration(timerOption);
     }
-  };
+    // Reload image if category changed
+    if (categoryChanged) {
+      loadNewImage(newSettings.category);
+    }
+  }, [settings.category, saveSettings, selectedTimer.seconds, setDuration, setCategory, loadNewImage]);
 
-  const handleExtend = () => {
-    setExtendPopupOpen(false);
+  const handleExtend = useCallback(() => {
+    closeExtendPopup();
     extend(EXTEND_MINUTES * 60);
-  };
+  }, [closeExtendPopup, extend]);
 
-  const handleSkipFromPopup = () => {
-    setExtendPopupOpen(false);
-    loadNewImage();
-    reset();
+  const handleSkipFromPopup = useCallback(() => {
+    closeExtendPopup();
+    skip();
     start();
-  };
-
-  const handleSkip = () => {
-    loadNewImage();
-    reset();
-    if (isRunning) start();
-  };
+  }, [closeExtendPopup, skip, start]);
 
   // Loading State
-  if (isLoading && !currentImage) {
+  if (isImageLoading && !currentImage) {
     return (
       <div className="app-container w-screen flex items-center justify-center bg-black text-white">
         <div className="text-xl">Loading...</div>
@@ -67,12 +112,12 @@ function App() {
   }
 
   // Error State
-  if (error && !currentImage) {
+  if (imageError && !currentImage) {
     return (
       <div className="app-container w-screen flex flex-col items-center justify-center bg-black text-white gap-4">
-        <div className="text-xl text-red-400">Error: {error}</div>
+        <div className="text-xl text-red-400">Error: {imageError}</div>
         <button
-          onClick={loadNewImage}
+          onClick={() => loadNewImage()}
           className="bg-white text-black px-4 py-2 rounded-lg"
         >
           Retry
@@ -85,14 +130,7 @@ function App() {
     <div className="app-container w-screen flex flex-col bg-black">
       {currentImage && (
         <>
-          <Header
-            isRunning={isRunning}
-            onStart={start}
-            onPause={pause}
-            onSkip={handleSkip}
-            onSettingsOpen={() => setSettingsOpen(true)}
-          />
-          <ProgressBar progress={progress} timeLeft={timeLeft} />
+          <Header />
 
           <main className="flex-1 min-h-0 bg-red-400">
             <ImageDisplay
@@ -100,10 +138,11 @@ function App() {
               imageAlt={currentImage.city}
               imageId={currentImage.id}
               imageMode={settings.imageMode}
-              isLoading={isLoading}
+              isLoading={isImageLoading}
             />
           </main>
-          
+                    <ProgressBar progress={progress} timeLeft={timeLeft} />
+
           <Footer
             image={currentImage}
             progress={progress}
@@ -112,11 +151,11 @@ function App() {
 
           <SettingsPopup
             isOpen={settingsOpen}
-            onClose={() => setSettingsOpen(false)}
+            onClose={closeSettings}
             selectedTimer={selectedTimer}
             imageMode={settings.imageMode}
             showExtendPrompt={settings.showExtendPrompt}
-            isRunning={isRunning}
+            category={settings.category}
             onSave={handleSaveSettings}
           />
 

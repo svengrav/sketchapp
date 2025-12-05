@@ -4,28 +4,18 @@ import {
   ForwardIcon,
 } from "@heroicons/react/24/solid";
 import { SettingsButton } from "./SettingsPopup";
+import { usePlaybackControls, useSettingsPopup } from "../stores/useAppStore";
 
-type ControlsProps = {
-  isRunning: boolean;
-  onStart: () => void;
-  onPause: () => void;
-  onSkip: () => void;
-  onSettingsOpen: () => void;
-};
+export function Controls() {
+  const { isRunning, start, pause, skip } = usePlaybackControls();
+  const { open: openSettings } = useSettingsPopup();
 
-export function Controls({
-  isRunning,
-  onStart,
-  onPause,
-  onSkip,
-  onSettingsOpen,
-}: ControlsProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 bg-zinc-900 px-2 rounded-md w-min border border-zinc-700">
       {/* Start/Pause Button */}
       <button
-        onClick={isRunning ? onPause : onStart}
-        className="bg-zinc-50  text-black hover:bg-white p-1 rounded-md transition-colors"
+        onClick={isRunning ? pause : start}
+        className=" text-white p-1 rounded-sm transition-colors cursor-pointer"
         title={isRunning ? "Pause" : "Start"}
       >
         {isRunning ? (
@@ -37,15 +27,15 @@ export function Controls({
 
       {/* Skip Button */}
       <button
-        onClick={onSkip}
-        className="bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+        onClick={skip}
+        className=" text-white p-2 transition-colors cursor-pointer"
         title="Next Image"
       >
         <ForwardIcon className="w-5 h-5" />
       </button>
 
       {/* Settings Button */}
-      <SettingsButton onClick={onSettingsOpen} />
+      <SettingsButton onClick={openSettings} />
     </div>
   );
 }

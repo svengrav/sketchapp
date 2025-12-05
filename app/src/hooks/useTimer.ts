@@ -31,33 +31,40 @@ export function useTimer({ defaultOption, initialSeconds, onComplete }: UseTimer
 
   const [selectedTimer, setSelectedTimer] = useState<TimerOption>(getInitialOption);
   const [timeLeft, setTimeLeft] = useState(selectedTimer.seconds);
+  const [totalDuration, setTotalDuration] = useState(selectedTimer.seconds);
   const [isRunning, setIsRunning] = useState(false);
 
-  const duration = selectedTimer.seconds;
-  const progress = ((duration - timeLeft) / duration) * 100;
+  const progress = ((totalDuration - timeLeft) / totalDuration) * 100;
 
   const start = useCallback(() => setIsRunning(true), []);
   const pause = useCallback(() => setIsRunning(false), []);
   const reset = useCallback(() => {
-    setTimeLeft(duration);
+    setTimeLeft(selectedTimer.seconds);
+    setTotalDuration(selectedTimer.seconds);
     setIsRunning(false);
-  }, [duration]);
+  }, [selectedTimer.seconds]);
 
   const extend = useCallback((seconds: number) => {
-    setTimeLeft((prev) => prev + seconds);
+    setTimeLeft((prev) => {
+      const newTime = prev + seconds;
+      setTotalDuration(newTime); // Reset progress to 0%
+      return newTime;
+    });
     setIsRunning(true);
   }, []);
 
   const setDuration = useCallback((option: TimerOption) => {
     setSelectedTimer(option);
     setTimeLeft(option.seconds);
+    setTotalDuration(option.seconds);
     setIsRunning(false);
   }, []);
 
-  // Reset timeLeft wenn duration sich ändert
+  // Reset timeLeft wenn selectedTimer sich ändert
   useEffect(() => {
-    setTimeLeft(duration);
-  }, [duration]);
+    setTimeLeft(selectedTimer.seconds);
+    setTotalDuration(selectedTimer.seconds);
+  }, [selectedTimer.seconds]);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -66,14 +73,15 @@ export function useTimer({ defaultOption, initialSeconds, onComplete }: UseTimer
       setTimeLeft((prev) => {
         if (prev <= 1) {
           onComplete();
-          return duration; // Reset für nächstes Bild
+          setTotalDuration(selectedTimer.seconds);
+          return selectedTimer.seconds; // Reset für nächstes Bild
         }
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, duration, onComplete]);
+  }, [isRunning, selectedTimer.seconds, onComplete]);
 
   return { timeLeft, isRunning, progress, start, pause, reset, extend, selectedTimer, setDuration };
 }

@@ -30,7 +30,7 @@ function ResetButton() {
   return (
     <button
       onClick={() => resetTransform()}
-      className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-colors z-20"
+      className="absolute bottom-4 right-4 bg-linear-120 hover:bg-black/70 text-white p-2 rounded-lg transition-colors z-20"
       title="Reset View"
     >
       <ArrowPathIcon className="w-5 h-5" />
@@ -40,7 +40,7 @@ function ResetButton() {
 
 export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading }: ImageDisplayProps) {
   return (
-    <div className="relative w-full h-full overflow-hidden bg-black">
+    <div className="relative w-full h-full overflow-hidden bg-linear-to-t from-black  bg-zinc-900 p-2">
       {/* Loading Overlay */}
       {isLoading && (
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
@@ -62,10 +62,9 @@ export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading
           <img
             src={imageUrl}
             alt={imageAlt}
-            className="max-w-full max-h-full object-contain"
+            className="max-w-full max-h-full object-contain  rounded-md"
           />
         </TransformComponent>
-        <ResetButton />
       </TransformWrapper>
     </div>
   );

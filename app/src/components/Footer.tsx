@@ -1,6 +1,5 @@
-import { CameraIcon, ClockIcon, MapPinIcon } from "@heroicons/react/24/solid";
+import { CameraIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import type { SketchImage } from "../services/api";
-import { formatTime } from "../hooks/useTimer";
 
 type FooterProps = {
   image: SketchImage;
@@ -8,13 +7,11 @@ type FooterProps = {
   timeLeft: number;
 };
 
-export function Footer({ image, progress, timeLeft }: FooterProps) {
+export function Footer({ image }: FooterProps) {
   // Verbleibende Zeit: 100% - Fortschritt = von rechts nach links abnehmend
-  const remaining = 100 - progress;
 
   return (
     <footer className="bg-black/80 shrink-0 border-t border-zinc-700">
-
 
       {/* Image Info & Photographer Credit */}
       <div className="px-3 py-1.5 flex items-center justify-between gap-2 text-xs">

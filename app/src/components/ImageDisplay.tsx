@@ -42,11 +42,22 @@ export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading
         minScale={0.5}
         maxScale={5}
         centerOnInit={true}
+        centerZoomedOut={true}
         key={`${imageId}-${imageMode}`}
       >
         <TransformComponent
-          wrapperStyle={{ width: "100%", height: "100%" }}
-          contentStyle={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
+          wrapperStyle={{ 
+            width: "100%", 
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          contentStyle={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            alignItems: "center",
+          }}
         >
           <div className="relative">
             <img

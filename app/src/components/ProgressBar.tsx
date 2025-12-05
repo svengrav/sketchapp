@@ -7,9 +7,9 @@ export function ProgressBar({ progress }: ProgressBarProps) {
   const remaining = 100 - progress;
   
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-2 bg-black/30">
+    <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/30">
       <div
-        className="h-full bg-white/80 transition-all duration-1000 ease-linear ml-auto"
+        className="h-full bg-indigo-600 transition-all duration-1000 ease-linear ml-auto"
         style={{ width: `${remaining}%` }}
       />
     </div>

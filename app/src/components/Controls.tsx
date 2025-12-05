@@ -1,5 +1,7 @@
 import type { TimerOption } from "../hooks/useTimer";
 import { timerOptions, formatTime } from "../hooks/useTimer";
+import type { ImageMode } from "./ImageDisplay";
+import { imageModes } from "./ImageDisplay";
 
 type ControlsProps = {
   selectedTimer: TimerOption;
@@ -9,6 +11,8 @@ type ControlsProps = {
   onStart: () => void;
   onPause: () => void;
   onSkip: () => void;
+  imageMode: ImageMode;
+  onImageModeChange: (mode: ImageMode) => void;
 };
 
 export function Controls({
@@ -19,6 +23,8 @@ export function Controls({
   onStart,
   onPause,
   onSkip,
+  imageMode,
+  onImageModeChange,
 }: ControlsProps) {
   return (
     <div className="absolute top-4 right-4 flex items-center gap-3">
@@ -54,12 +60,29 @@ export function Controls({
         {isRunning ? "Pause" : "Start"}
       </button>
 
+      {/* Image Mode Toggle */}
+      <div className="flex bg-black/50 rounded-lg overflow-hidden">
+        {imageModes.map((mode) => (
+          <button
+            key={mode.value}
+            onClick={() => onImageModeChange(mode.value)}
+            className={`px-3 py-2 text-sm transition-colors ${
+              imageMode === mode.value
+                ? "bg-white text-black"
+                : "text-white hover:bg-black/70"
+            }`}
+          >
+            {mode.label}
+          </button>
+        ))}
+      </div>
+
       {/* Skip Button */}
       <button
         onClick={onSkip}
         className="bg-black/50 hover:bg-black/70 text-white px-4 py-2 block rounded-lg transition-colors"
       >
-      Next
+        Next
       </button>
     </div>
   );

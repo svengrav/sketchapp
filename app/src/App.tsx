@@ -1,69 +1,16 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { fetchRandomImage } from "./services/api";
-import type { SketchImage } from "./services/api";
-import { useTimer, timerOptions } from "./hooks/useTimer";
-import type { TimerOption } from "./hooks/useTimer";
+import { useState } from "react";
+import { useTimer } from "./hooks/useTimer";
+import { useSketchImage } from "./hooks/useSketchImage";
 import { ImageDisplay } from "./components/ImageDisplay";
+import type { ImageMode } from "./components/ImageDisplay";
 import { Controls } from "./components/Controls";
 
-// Demo-Mode über ENV steuern
-const USE_DEMO_MODE = import.meta.env.VITE_USE_DEMO_MODE === "true";
-
-// Demo-Bild für Entwicklung (spart API-Kontingent)
-const DEMO_IMAGE: SketchImage = {
-  id: "demo",
-  url: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1920",
-  city: "Paris (Demo)",
-  photographer: "Demo Photographer",
-  photographerUrl: "https://unsplash.com",
-};
-
 function App() {
-  const [currentImage, setCurrentImage] = useState<SketchImage | null>(USE_DEMO_MODE ? DEMO_IMAGE : null);
-  const [isLoading, setIsLoading] = useState(!USE_DEMO_MODE);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedTimer, setSelectedTimer] = useState<TimerOption>(
-    timerOptions[2] // 5 Min default
-  );
-  
-  // Ref für aktuelle Image-ID (verhindert useCallback dependency loop)
-  const currentImageIdRef = useRef<string | undefined>(undefined);
-  currentImageIdRef.current = currentImage?.id;
-
-  const loadNewImage = useCallback(async () => {
-    if (USE_DEMO_MODE) {
-      console.log("Demo mode - skipping API fetch");
-      return;
-    }
-    
-    setIsLoading(true);
-    setError(null);
-    try {
-      const image = await fetchRandomImage(currentImageIdRef.current);
-      setCurrentImage(image);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load image");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []); // Keine Dependencies mehr - nutzt Ref
-
-  // Initiales Bild laden (nur einmal)
-  useEffect(() => {
-    if (!USE_DEMO_MODE) {
-      loadNewImage();
-    }
-  }, []); // Leere Dependencies - nur beim Mount
-
-  const { timeLeft, isRunning, progress, start, pause, reset } = useTimer({
-    duration: selectedTimer.seconds,
+  const { currentImage, isLoading, error, loadNewImage } = useSketchImage();
+  const [imageMode, setImageMode] = useState<ImageMode>("balanced");
+  const { timeLeft, isRunning, progress, start, pause, reset, selectedTimer, setDuration } = useTimer({
     onComplete: loadNewImage,
   });
-
-  const handleTimerChange = (option: TimerOption) => {
-    setSelectedTimer(option);
-    reset();
-  };
 
   const handleSkip = () => {
     loadNewImage();
@@ -99,15 +46,17 @@ function App() {
     <div className="w-screen h-screen overflow-hidden bg-black">
       {currentImage && (
         <>
-          <ImageDisplay image={currentImage} progress={progress} isLoading={isLoading} />
+          <ImageDisplay image={currentImage} progress={progress} isLoading={isLoading} imageMode={imageMode} />
           <Controls
             selectedTimer={selectedTimer}
-            onTimerChange={handleTimerChange}
+            onTimerChange={setDuration}
             isRunning={isRunning}
             timeLeft={timeLeft}
             onStart={start}
             onPause={pause}
             onSkip={handleSkip}
+            imageMode={imageMode}
+            onImageModeChange={setImageMode}
           />
         </>
       )}

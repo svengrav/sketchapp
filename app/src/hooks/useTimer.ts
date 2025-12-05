@@ -14,14 +14,16 @@ export const timerOptions: TimerOption[] = [
 ];
 
 type UseTimerProps = {
-  duration: number;
+  defaultOption?: TimerOption;
   onComplete: () => void;
 };
 
-export function useTimer({ duration, onComplete }: UseTimerProps) {
-  const [timeLeft, setTimeLeft] = useState(duration);
+export function useTimer({ defaultOption = timerOptions[2], onComplete }: UseTimerProps) {
+  const [selectedTimer, setSelectedTimer] = useState<TimerOption>(defaultOption);
+  const [timeLeft, setTimeLeft] = useState(selectedTimer.seconds);
   const [isRunning, setIsRunning] = useState(false);
 
+  const duration = selectedTimer.seconds;
   const progress = ((duration - timeLeft) / duration) * 100;
 
   const start = useCallback(() => setIsRunning(true), []);
@@ -30,6 +32,12 @@ export function useTimer({ duration, onComplete }: UseTimerProps) {
     setTimeLeft(duration);
     setIsRunning(false);
   }, [duration]);
+
+  const setDuration = useCallback((option: TimerOption) => {
+    setSelectedTimer(option);
+    setTimeLeft(option.seconds);
+    setIsRunning(false);
+  }, []);
 
   // Reset timeLeft wenn duration sich ändert
   useEffect(() => {
@@ -52,7 +60,7 @@ export function useTimer({ duration, onComplete }: UseTimerProps) {
     return () => clearInterval(interval);
   }, [isRunning, duration, onComplete]);
 
-  return { timeLeft, isRunning, progress, start, pause, reset };
+  return { timeLeft, isRunning, progress, start, pause, reset, selectedTimer, setDuration };
 }
 
 // Formatiere Sekunden zu MM:SS

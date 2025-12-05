@@ -50,7 +50,7 @@ function App() {
   // Loading State
   if (isLoading && !currentImage) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-black text-white">
+      <div className="app-container w-screen flex items-center justify-center bg-black text-white">
         <div className="text-xl">Loading...</div>
       </div>
     );
@@ -59,7 +59,7 @@ function App() {
   // Error State
   if (error && !currentImage) {
     return (
-      <div className="w-screen h-screen flex flex-col items-center justify-center bg-black text-white gap-4">
+      <div className="app-container w-screen flex flex-col items-center justify-center bg-black text-white gap-4">
         <div className="text-xl text-red-400">Error: {error}</div>
         <button
           onClick={loadNewImage}
@@ -72,11 +72,10 @@ function App() {
   }
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-black">
+    <div className="app-container w-screen flex flex-col bg-black">
       {currentImage && (
         <>
           <Header
-            image={currentImage}
             isRunning={isRunning}
             onStart={start}
             onPause={pause}

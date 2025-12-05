@@ -1,9 +1,7 @@
-import { MapPinIcon } from "@heroicons/react/24/solid";
-import type { SketchImage } from "../services/api";
+import { PaintBrushIcon } from "@heroicons/react/24/solid";
 import { Controls } from "./Controls";
 
 type HeaderProps = {
-  image: SketchImage;
   isRunning: boolean;
   onStart: () => void;
   onPause: () => void;
@@ -12,7 +10,6 @@ type HeaderProps = {
 };
 
 export function Header({
-  image,
   isRunning,
   onStart,
   onPause,
@@ -21,10 +18,10 @@ export function Header({
 }: HeaderProps) {
   return (
     <header className="flex items-center justify-between px-3 py-2 bg-black/80 shrink-0">
-      {/* City Name */}
-      <div className="text-white text-sm flex items-center gap-1 truncate mr-2">
-        <MapPinIcon className="w-4 h-4 shrink-0" />
-        <span className="truncate">{image.city}</span>
+      {/* App Title */}
+      <div className="text-white text-sm font-semibold flex items-center gap-1.5">
+        <PaintBrushIcon className="w-4 h-4 text-indigo-400" />
+        <span>Sketch App</span>
       </div>
 
       {/* Controls */}

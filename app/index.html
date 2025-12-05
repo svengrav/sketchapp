@@ -3,9 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sketchapp</title>
+    
+    <!-- Dark theme for browser UI (address bar, nav bar) -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
+    
+    <!-- iOS Status Bar -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    
+    <title>Sketch App</title>
   </head>
-  <body>
+  <body class="bg-black">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

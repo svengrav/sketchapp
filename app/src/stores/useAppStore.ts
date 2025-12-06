@@ -136,7 +136,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   // Image State
   currentImage: USE_DEMO_MODE ? DEMO_IMAGE : null,
-  isImageLoading: !USE_DEMO_MODE,
+  isImageLoading: false,
   imageError: null,
   category: "cities" as ImageCategory,
 

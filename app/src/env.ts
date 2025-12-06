@@ -1,6 +1,6 @@
 // App Environment & Constants
 // Version wird durch docker.bash automatisch inkrementiert
 
-export const APP_VERSION = "1.0.1";
+export const APP_VERSION = "1.0.4";
 
 export const GITHUB_URL = "https://github.com/svengrav/sketchapp";

@@ -25,6 +25,7 @@ function App() {
     imageError,
     start,
     extend,
+    reset,
     setDuration,
     setCategory,
     tick,
@@ -85,11 +86,12 @@ function App() {
     if (timerOption && timerOption.seconds !== selectedTimer.seconds) {
       setDuration(timerOption);
     }
-    // Reload image if category changed
+    // Reload image and reset timer if category changed
     if (categoryChanged) {
       loadNewImage(newSettings.category);
+      reset(); // Reset timer & progress
     }
-  }, [settings.category, saveSettings, selectedTimer.seconds, setDuration, setCategory, loadNewImage]);
+  }, [settings.category, saveSettings, selectedTimer.seconds, setDuration, setCategory, loadNewImage, reset]);
 
   const handleExtend = useCallback(() => {
     closeExtendPopup();

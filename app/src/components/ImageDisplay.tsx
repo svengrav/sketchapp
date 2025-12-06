@@ -42,18 +42,22 @@ export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading
         minScale={0.5}
         maxScale={5}
         centerOnInit={true}
-        centerZoomedOut={true}
         key={`${imageId}-${imageMode}`}
+        onInit={(ref) => {
+          // Manuell zentrieren nach Initialisierung
+          setTimeout(() => {
+            ref.centerView(modeScale[imageMode], 0);
+          }, 50);
+        }}
       >
         <TransformComponent
           wrapperStyle={{ 
             width: "100%", 
             height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
           }}
           contentStyle={{ 
+            width: "100%",
+            height: "100%",
             display: "flex", 
             justifyContent: "center", 
             alignItems: "center",

@@ -1,0 +1,97 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Deploy App",
+      "type": "shell",
+      "command": "./docker.bash",
+      "options": {
+        "cwd": "${workspaceFolder}",
+      },
+      "problemMatcher": {},
+      "isBackground": false,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "sketchapp"
+      }
+    },
+    {
+      "label": "API: Start (Deno)",
+      "type": "shell",
+      "command": "deno",
+      "args": ["task", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/api",
+        "env": {
+          "PORT": "8005"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*)$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*$",
+          "endsPattern": "^Listening on.*$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "sketchapp"
+      }
+    },
+    {
+      "label": "App: Start (Vite)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/app"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*)$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*$",
+          "endsPattern": "^.*Local:.*$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "sketchapp"
+      }
+    },
+    {
+      "label": "Start All (API + App)",
+      "dependsOn": ["API: Start (Deno)", "App: Start (Vite)"],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Docker: Build & Start",
+      "type": "shell",
+      "command": "bash",
+      "args": ["docker.bash"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}

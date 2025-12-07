@@ -1,0 +1,36 @@
+services:
+  # API - Deno Backend
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: sketchapp-api
+    ports:
+      - "8010:8000"
+    environment:
+      - PORT=8000
+      - UNSPLASH_ACCESS_KEY=${UNSPLASH_ACCESS_KEY}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
+    networks:
+      - luna-ai-network
+    restart: unless-stopped
+
+  # Frontend - React App
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-https://devbox.ferthe.de/sketch/api}
+    container_name: sketchapp-app
+    ports:
+      - "8011:80"
+    depends_on:
+      - api
+    networks:
+      - luna-ai-network
+    restart: unless-stopped
+
+networks:
+  luna-ai-network:
+    external: true

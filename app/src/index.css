@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* Fix für mobile Browser viewport height */
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Fallback für ältere Browser + mobile fix */
+.app-container {
+  height: 100vh;
+  height: 100dvh; /* dynamic viewport height - passt sich an mobile Browser an */
+}

@@ -1,0 +1,23 @@
+# Environment files (contain secrets!)
+.env
+api/.env
+app/.env
+
+# Dependencies
+node_modules/
+.vite/
+
+# Build output
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log

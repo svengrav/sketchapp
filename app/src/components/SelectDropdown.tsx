@@ -39,7 +39,7 @@ export function SelectDropdown<T>({
           <ListboxOptions
             anchor="bottom start"
             className={clsx(
-              "z-50 w-[var(--button-width)] bg-zinc-800 rounded-lg shadow-lg overflow-hidden max-h-60 overflow-y-auto",
+              "z-50 w-(--button-width) bg-zinc-800 rounded-lg shadow-lg overflow-hidden max-h-60 overflow-y-auto",
               "transition duration-100 ease-in data-leave:data-closed:opacity-0"
             )}
           >

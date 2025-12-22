@@ -17,11 +17,13 @@ import { SettingsPopup } from "./components/SettingsPopup.tsx";
 import { ExtendTimerPopup } from "./components/ExtendTimerPopup.tsx";
 import { WelcomePopup } from "./components/WelcomePopup.tsx";
 import { ProgressBar } from "./components/ProgressBar.tsx";
+import { useEffect, useRef } from "react";
 
 const EXTEND_MINUTES = 2;
 
 function App() {
   const { settings, updateSettings } = useSettingsStore();
+  const prevSettingsRef = useRef(settings);
 
   // Timer Store
   const {
@@ -39,6 +41,7 @@ function App() {
     isImageLoading,
     closeSettings,
     loadNewImage,
+    setCategory,
   } = useAppStore();
 
   const progress = useTimerStore(selectProgress);
@@ -51,6 +54,39 @@ function App() {
 
   // Handle welcome flow
   const { handleWelcomeStart } = useWelcomeFlow();
+
+  // Handle settings changes and reload images when needed
+  useEffect(() => {
+    const prevSettings = prevSettingsRef.current;
+    const categoryChanged = settings.category !== prevSettings.category;
+    const queryModeChanged = settings.queryMode !== prevSettings.queryMode;
+    const customQueryChanged = settings.customQuery !== prevSettings.customQuery;
+    
+    console.log("Settings changed:", { 
+      categoryChanged, 
+      queryModeChanged, 
+      customQueryChanged,
+      queryMode: settings.queryMode,
+      category: settings.category,
+      customQuery: settings.customQuery 
+    });
+    
+    // Update category in app store
+    setCategory(settings.category);
+    
+    // Reload image if query-related settings changed
+    if (categoryChanged || queryModeChanged || customQueryChanged) {
+      if (settings.queryMode === "category") {
+        console.log("Loading with category:", settings.category);
+        loadNewImage(settings.category);
+      } else if (settings.queryMode === "custom" && settings.customQuery.trim()) {
+        console.log("Loading with custom query:", settings.customQuery.trim());
+        loadNewImage(undefined, settings.customQuery.trim());
+      }
+    }
+    
+    prevSettingsRef.current = settings;
+  }, [settings.category, settings.queryMode, settings.customQuery, setCategory, loadNewImage]);
 
   return (
     <AppWrapper>
@@ -83,6 +119,8 @@ function App() {
               imageMode={settings.imageMode}
               showExtendPrompt={settings.showExtendPrompt}
               category={settings.category}
+              queryMode={settings.queryMode}
+              customQuery={settings.customQuery}
               onSave={updateSettings}
             />
 

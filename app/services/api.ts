@@ -55,6 +55,21 @@ export async function fetchRandomImage(excludeId?: string, category?: ImageCateg
   return response.json();
 }
 
+export async function fetchImageWithCustomQuery(customQuery: string): Promise<SketchImage> {
+  const params = new URLSearchParams();
+  params.set("query", customQuery);
+  
+  const url = `${API_BASE}/api/search?${params.toString()}`;
+  
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+  
+  return response.json();
+}
+
 export async function getCacheStatus(): Promise<{
   imageCount: number;
   lastFetch: number;

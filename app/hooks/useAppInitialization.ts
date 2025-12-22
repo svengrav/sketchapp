@@ -38,7 +38,11 @@ export function useAppInitialization() {
   // Load initial image
   useEffect(() => {
     if (!currentImage && !isImageLoading) {
-      loadNewImage(settings.category);
+      if (settings.queryMode === "custom" && settings.customQuery) {
+        loadNewImage(undefined, settings.customQuery);
+      } else {
+        loadNewImage(settings.category);
+      }
     }
   }, []); // Only on mount
 }

@@ -21,7 +21,9 @@ type SettingsPopupProps = {
   imageMode: ImageMode;
   showExtendPrompt: boolean;
   category: ImageCategory;
-  onSave: (settings: { timerSeconds: number; imageMode: ImageMode; showExtendPrompt: boolean; category: ImageCategory, hasSeenWelcome: boolean }) => void;
+  queryMode: "category" | "custom";
+  customQuery: string;
+  onSave: (settings: { timerSeconds: number; imageMode: ImageMode; showExtendPrompt: boolean; category: ImageCategory; hasSeenWelcome: boolean; queryMode: "category" | "custom"; customQuery: string }) => void;
 };
 
 export function SettingsPopup({
@@ -31,6 +33,8 @@ export function SettingsPopup({
   imageMode,
   showExtendPrompt,
   category,
+  queryMode,
+  customQuery,
   onSave,
 }: SettingsPopupProps) {
   // Edge overlay state (directly from store, not part of save flow)
@@ -44,6 +48,8 @@ export function SettingsPopup({
   const [localImageMode, setLocalImageMode] = useState(imageMode);
   const [localExtendPrompt, setLocalExtendPrompt] = useState(showExtendPrompt);
   const [localCategory, setLocalCategory] = useState(category);
+  const [localQueryMode, setLocalQueryMode] = useState(queryMode);
+  const [localCustomQuery, setLocalCustomQuery] = useState(customQuery);
 
   // Reset local state when popup opens
   useEffect(() => {
@@ -52,8 +58,10 @@ export function SettingsPopup({
       setLocalImageMode(imageMode);
       setLocalExtendPrompt(showExtendPrompt);
       setLocalCategory(category);
+      setLocalQueryMode(queryMode);
+      setLocalCustomQuery(customQuery);
     }
-  }, [isOpen, selectedTimer, imageMode, showExtendPrompt, category]);
+  }, [isOpen, selectedTimer, imageMode, showExtendPrompt, category, queryMode, customQuery]);
 
   if (!isOpen) return null;
 
@@ -64,6 +72,8 @@ export function SettingsPopup({
       showExtendPrompt: localExtendPrompt,
       category: localCategory,
       hasSeenWelcome: true,
+      queryMode: localQueryMode,
+      customQuery: localCustomQuery,
     });
     onClose();
   };
@@ -76,7 +86,9 @@ export function SettingsPopup({
     localTimer.seconds !== selectedTimer.seconds ||
     localImageMode !== imageMode ||
     localExtendPrompt !== showExtendPrompt ||
-    localCategory !== category;
+    localCategory !== category ||
+    localQueryMode !== queryMode ||
+    localCustomQuery !== customQuery;
 
   return (
     <PopupBase isOpen={isOpen} onClose={handleCancel} title="Settings">
@@ -114,12 +126,61 @@ export function SettingsPopup({
 
       {/* Image Category */}
       <div className="mb-6">
-        <SelectDropdown
-          value={localCategory}
-          onChange={setLocalCategory}
-          options={categoryOptions}
-          label="Image Category"
-        />
+        {/* Query Mode Toggle */}
+        <label className="text-white/60 text-sm mb-2 block">Image Source</label>
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <button
+            type="button"
+            onClick={() => setLocalQueryMode("category")}
+            className={clsx(
+              "py-2 px-3 text-sm rounded-lg transition-colors cursor-pointer",
+              localQueryMode === "category"
+                ? "bg-indigo-600 text-white"
+                : "bg-zinc-800 text-white/80 hover:bg-zinc-700"
+            )}
+          >
+            Categories
+          </button>
+          <button
+            type="button"
+            onClick={() => setLocalQueryMode("custom")}
+            className={clsx(
+              "py-2 px-3 text-sm rounded-lg transition-colors cursor-pointer",
+              localQueryMode === "custom"
+                ? "bg-indigo-600 text-white"
+                : "bg-zinc-800 text-white/80 hover:bg-zinc-700"
+            )}
+          >
+            Custom Keywords
+          </button>
+        </div>
+        
+        {/* Category Selection (only if category mode) */}
+        {localQueryMode === "category" && (
+          <SelectDropdown
+            value={localCategory}
+            onChange={setLocalCategory}
+            options={categoryOptions}
+            label="Image Category"
+          />
+        )}
+        
+        {/* Custom Query Input (only if custom mode) */}
+        {localQueryMode === "custom" && (
+          <div>
+            <label className="text-white/60 text-sm mb-2 block">Custom Keywords</label>
+            <input
+              type="text"
+              value={localCustomQuery}
+              onChange={(e) => setLocalCustomQuery(e.target.value)}
+              placeholder="e.g. mountain lake, urban street art, vintage cars"
+              className="w-full py-2.5 px-4 text-sm rounded-lg bg-zinc-800 text-white placeholder-white/40 border-0 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            />
+            <p className="text-white/40 text-xs mt-1">
+              Enter keywords to search for specific types of images
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Edge Overlay Toggle */}

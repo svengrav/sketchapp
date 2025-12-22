@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
-import { fetchRandomImage } from "../services/api.ts";
+import { fetchRandomImage, fetchImageWithCustomQuery } from "../services/api.ts";
 import type { SketchImage, ImageCategory } from "../services/api.ts";
 
 // Demo-Mode über ENV steuern
@@ -24,7 +24,7 @@ interface ImageState {
 }
 
 interface ImageActions {
-  loadNewImage: (category?: ImageCategory) => Promise<void>;
+  loadNewImage: (category?: ImageCategory, customQuery?: string) => Promise<void>;
   skip: () => void;
   setCategory: (category: ImageCategory) => void;
 }
@@ -60,20 +60,32 @@ export const useAppStore = create<AppStore>((set, get) => ({
   category: "cities" as ImageCategory,
 
   // Image Actions
-  loadNewImage: async (overrideCategory?: ImageCategory) => {
+  loadNewImage: async (overrideCategory?: ImageCategory, customQuery?: string) => {
     if (USE_DEMO_MODE) {
       console.log("Demo mode - skipping API fetch");
       return;
     }
 
+    console.log("Loading new image with:", { overrideCategory, customQuery });
     const { currentImage, category } = get();
-    const cat = overrideCategory ?? category;
     set({ isImageLoading: true, imageError: null });
     
     try {
-      const image = await fetchRandomImage(currentImage?.id, cat);
+      let image;
+      if (customQuery) {
+        // Use custom query search
+        console.log("Using custom query:", customQuery);
+        image = await fetchImageWithCustomQuery(customQuery);
+      } else {
+        // Use category-based search
+        const cat = overrideCategory ?? category;
+        console.log("Using category:", cat);
+        image = await fetchRandomImage(currentImage?.id, cat);
+      }
+      console.log("Image loaded:", image);
       set({ currentImage: image, isImageLoading: false });
     } catch (err) {
+      console.error("Failed to load image:", err);
       set({ 
         imageError: err instanceof Error ? err.message : "Failed to load image",
         isImageLoading: false 

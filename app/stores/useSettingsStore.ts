@@ -14,6 +14,8 @@ export interface AppSettings {
   showExtendPrompt: boolean;
   category: ImageCategory;
   hasSeenWelcome: boolean;
+  queryMode: "category" | "custom";
+  customQuery: string;
 }
 
 const defaultSettings: AppSettings = {
@@ -22,23 +24,38 @@ const defaultSettings: AppSettings = {
   showExtendPrompt: true,
   category: "cities",
   hasSeenWelcome: false,
+  queryMode: "category",
+  customQuery: "",
 };
 
 function loadFromStorage(): AppSettings {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
+    console.log("Raw stored settings:", stored);
     if (stored) {
       const parsed = JSON.parse(stored);
-      return { ...defaultSettings, ...parsed };
+      console.log("Parsed stored settings:", parsed);
+      // Merge with defaults to ensure new fields exist
+      const merged = { 
+        ...defaultSettings, 
+        ...parsed,
+        // Ensure new fields are properly set
+        queryMode: parsed.queryMode || defaultSettings.queryMode,
+        customQuery: parsed.customQuery || defaultSettings.customQuery,
+      };
+      console.log("Final merged settings:", merged);
+      return merged;
     }
   } catch (e) {
     console.warn("Failed to load settings:", e);
   }
+  console.log("Using default settings:", defaultSettings);
   return defaultSettings;
 }
 
 function persistToStorage(settings: AppSettings): void {
   try {
+    console.log("Saving settings to localStorage:", settings);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   } catch (e) {
     console.warn("Failed to save settings:", e);
@@ -63,8 +80,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   
   updateSettings: (newSettings: AppSettings) => {
     const currentSettings = get().settings;
-    const categoryChanged = newSettings.category !== currentSettings.category;
-    const timerChanged = newSettings.timerSeconds !== currentSettings.timerSeconds;
+    console.log("Updating settings from:", currentSettings, "to:", newSettings);
     
     // Save to storage
     persistToStorage(newSettings);
@@ -76,20 +92,10 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
       selectedTimer: timerOption
     });
     
-    // Coordinate with other stores
-    const { setCategory, loadNewImage } = useAppStore.getState();
+    // Timer coordination
     const { selectedTimer, setDuration } = useTimerStore.getState();
-    
-    setCategory(newSettings.category);
-    
-    // Update timer duration if changed
-    if (timerChanged && timerOption.seconds !== selectedTimer.seconds) {
+    if (newSettings.timerSeconds !== currentSettings.timerSeconds && timerOption.seconds !== selectedTimer.seconds) {
       setDuration(timerOption);
-    }
-    
-    // Reload image if category changed
-    if (categoryChanged) {
-      loadNewImage(newSettings.category);
     }
   },
   

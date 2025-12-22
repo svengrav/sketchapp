@@ -1,12 +1,16 @@
 import { useCallback } from "react";
 import { useTimerStore } from "../stores/useTimerStore.ts";
 import { useAppStore } from "../stores/useAppStore.ts";
+import { useSettingsStore } from "../stores/useSettingsStore.ts";
 
 /**
  * Hook that provides a unified API for image controls.
  * Combines timer, app, and grid functionality for the Controls component.
  */
 export function useImageControls() {
+  // Settings Store
+  const { settings } = useSettingsStore();
+  
   // Timer Store
   const {
     isRunning,
@@ -23,7 +27,6 @@ export function useImageControls() {
     showGrid,
     toggleGrid,
     loadNewImage,
-    category,
   } = useAppStore();
 
   // Calculate extension time based on current timer duration
@@ -35,11 +38,15 @@ export function useImageControls() {
   const extensionSeconds = getExtensionSeconds(selectedTimer.seconds);
   const extensionMinutes = extensionSeconds / 60;
 
-  // Skip action: reset timer and load new image
+  // Skip action: reset timer and load new image based on current query settings
   const skip = useCallback(() => {
     resetTimer();
-    loadNewImage(category);
-  }, [resetTimer, loadNewImage, category]);
+    if (settings.queryMode === "custom") {
+      loadNewImage(undefined, settings.customQuery);
+    } else {
+      loadNewImage(settings.category);
+    }
+  }, [resetTimer, loadNewImage, settings.category, settings.queryMode, settings.customQuery]);
 
   // Quick extend: add extension time to current timer
   const quickExtend = useCallback(() => {

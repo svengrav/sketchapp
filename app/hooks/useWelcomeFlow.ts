@@ -21,6 +21,7 @@ export function useWelcomeFlow() {
         hasSeenWelcome: true,
         timerSeconds: timer.seconds,
         category: category,
+        queryMode: "category", // Reset to category mode for welcome
       });
       setDuration(timer);
       setCategory(category);

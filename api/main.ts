@@ -8,6 +8,7 @@ import {
   DEFAULT_CATEGORY,
   isValidCategory,
   fetchFromUnsplash,
+  fetchFromUnsplashCustom,
   type SketchImage,
   type ImageCategory,
 } from "./services/unsplash.ts";
@@ -124,6 +125,36 @@ async function handleRequest(req: Request): Promise<Response> {
     }
     
     return new Response(JSON.stringify({ ...image, _source: source }), { 
+      headers: corsHeaders() 
+    });
+  }
+
+  // GET /api/search - Custom keyword search
+  if (url.pathname === "/api/search" && req.method === "GET") {
+    const customQuery = url.searchParams.get("query");
+    
+    if (!customQuery || !customQuery.trim()) {
+      return new Response(JSON.stringify({ 
+        error: "Query parameter is required"
+      }), { 
+        status: 400, 
+        headers: corsHeaders() 
+      });
+    }
+    
+    const result = await fetchFromUnsplashCustom(UNSPLASH_ACCESS_KEY, customQuery);
+    
+    if (!result.success) {
+      return new Response(JSON.stringify({ 
+        error: result.error,
+        rateLimited: result.rateLimited 
+      }), { 
+        status: result.rateLimited ? 429 : 503, 
+        headers: corsHeaders() 
+      });
+    }
+    
+    return new Response(JSON.stringify({ ...result.image, _source: "unsplash-custom" }), { 
       headers: corsHeaders() 
     });
   }

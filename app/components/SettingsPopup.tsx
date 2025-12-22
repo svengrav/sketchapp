@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import clsx from "clsx";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
-import type { TimerOption } from "../hooks/useTimer";
-import { timerOptions } from "../hooks/useTimer";
-import type { ImageMode } from "./ImageDisplay";
-import { imageModes } from "./ImageDisplay";
-import { categoryOptions } from "../services/api";
-import type { ImageCategory } from "../services/api";
-import { useEdgeOverlay } from "../stores/useAppStore";
-import { PopupBase } from "./PopupBase";
-import { SelectDropdown } from "./SelectDropdown";
+import type { TimerOption } from "../hooks/useTimer.ts";
+import { timerOptions } from "../hooks/useTimer.ts";
+import type { ImageMode } from "./ImageDisplay.tsx";
+import { imageModes } from "./ImageDisplay.tsx";
+import { categoryOptions } from "../services/api.ts";
+import type { ImageCategory } from "../services/api.ts";
+import { useEdgeOverlay } from "../stores/useAppStore.ts";
+import { PopupBase } from "./PopupBase.tsx";
+import { SelectDropdown } from "./SelectDropdown.tsx";
 
 // Timer-Optionen als SelectDropdown-Format
 const timerDropdownOptions = timerOptions.map(t => ({ value: t, label: t.label }));
@@ -93,6 +93,7 @@ export function SettingsPopup({
         <div className="grid grid-cols-3 gap-2">
           {imageModes.map((mode) => (
             <button
+              type="button"
               key={mode.value}
               onClick={() => setLocalImageMode(mode.value)}
               className={clsx(
@@ -122,6 +123,7 @@ export function SettingsPopup({
       <div className="mb-6">
         <label className="text-white/60 text-sm mb-2 block">Drawing Aids</label>
         <button
+          type="button"
           onClick={toggleEdges}
           className={clsx(
             "w-full py-3 px-4 text-sm rounded-lg transition-colors flex items-center justify-between cursor-pointer",
@@ -166,6 +168,7 @@ export function SettingsPopup({
       <div className="mb-6">
         <label className="text-white/60 text-sm mb-2 block">When Timer Ends</label>
         <button
+          type="button"
           onClick={() => setLocalExtendPrompt(!localExtendPrompt)}
           className={clsx(
             "w-full py-3 px-4 text-sm rounded-lg transition-colors flex items-center justify-between cursor-pointer",
@@ -190,12 +193,14 @@ export function SettingsPopup({
       {/* Action Buttons */}
       <div className="flex gap-3">
         <button
+          type="button"
           onClick={handleCancel}
           className="flex-1 py-3 px-4 text-sm rounded-lg bg-zinc-800 text-white/80 hover:bg-zinc-700 transition-colors cursor-pointer"
         >
           Cancel
         </button>
         <button
+          type="button"
           onClick={handleSave}
           className={clsx(
             "flex-1 py-3 px-4 text-sm rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer",
@@ -215,6 +220,7 @@ export function SettingsPopup({
 export function SettingsButton({ onClick }: { onClick: () => void }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className=" text-white p-2 rounded-lg transition-colors"
       title="Settings"

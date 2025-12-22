@@ -1,14 +1,14 @@
 import { useEffect, useCallback } from "react";
-import { useAppStore, selectProgress, timerOptions } from "./stores/useAppStore";
-import { useSettings } from "./hooks/useSettings";
-import { ImageDisplay } from "./components/ImageDisplay";
-import { Header } from "./components/Header";
-import { Footer } from "./components/Footer";
-import { SettingsPopup } from "./components/SettingsPopup";
-import { ExtendTimerPopup } from "./components/ExtendTimerPopup";
-import { WelcomePopup } from "./components/WelcomePopup";
-import { ProgressBar } from "./components/ProgressBar";
-import { Logo } from "./components/Logo";
+import { useAppStore, selectProgress, timerOptions } from "./stores/useAppStore.ts";
+import { useSettings } from "./hooks/useSettings.ts";
+import { ImageDisplay } from "./components/ImageDisplay.tsx";
+import { Header } from "./components/Header.tsx";
+import { Footer } from "./components/Footer.tsx";
+import { SettingsPopup } from "./components/SettingsPopup.tsx";
+import { ExtendTimerPopup } from "./components/ExtendTimerPopup.tsx";
+import { WelcomePopup } from "./components/WelcomePopup.tsx";
+import { ProgressBar } from "./components/ProgressBar.tsx";
+import { Logo } from "./components/Logo.tsx";
 
 const EXTEND_MINUTES = 2;
 
@@ -123,6 +123,7 @@ function App() {
       <div className="app-container w-screen flex flex-col items-center justify-center bg-black text-white gap-4">
         <div className="text-xl text-red-400">Error: {imageError}</div>
         <button
+          type="button"
           onClick={() => loadNewImage()}
           className="bg-white text-black px-4 py-2 rounded-lg"
         >

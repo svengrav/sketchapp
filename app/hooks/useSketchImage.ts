@@ -1,8 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { fetchRandomImage } from "../services/api";
-import type { SketchImage, ImageCategory } from "../services/api";
+import { fetchRandomImage } from "../services/api.ts";
+import type { SketchImage, ImageCategory } from "../services/api.ts";
 
 // Demo-Mode über ENV steuern
+//@ts-ignore DENO
 const USE_DEMO_MODE = import.meta.env.VITE_USE_DEMO_MODE === "true";
 
 // Demo-Bild für Entwicklung (spart API-Kontingent)

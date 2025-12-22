@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
-import type { TimerOption } from "./useTimer";
-import { timerOptions } from "./useTimer";
-import type { ImageMode } from "../components/ImageDisplay";
-import type { ImageCategory } from "../services/api";
+import type { TimerOption } from "./useTimer.ts";
+import { timerOptions } from "./useTimer.ts";
+import type { ImageMode } from "../components/ImageDisplay.tsx";
+import type { ImageCategory } from "../services/api.ts";
 
 const STORAGE_KEY = "sketchapp-settings";
 

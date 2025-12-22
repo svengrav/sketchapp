@@ -1,8 +1,8 @@
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import clsx from "clsx";
-import { EdgeOverlay } from "./EdgeOverlay";
-import { GridOverlay } from "./GridOverlay";
-import { useEdgeOverlay, useGridOverlay } from "../stores/useAppStore";
+import { EdgeOverlay } from "./EdgeOverlay.tsx";
+import { GridOverlay } from "./GridOverlay.tsx";
+import { useEdgeOverlay, useGridOverlay } from "../stores/useAppStore.ts";
 
 export type ImageMode = "cover" | "contain" | "balanced";
 
@@ -44,7 +44,7 @@ export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading
         initialScale={modeScale[imageMode]}
         minScale={0.5}
         maxScale={5}
-        centerOnInit={true}
+        centerOnInit
         key={`${imageId}-${imageMode}`}
         onInit={(ref) => {
           // Manuell zentrieren nach Initialisierung

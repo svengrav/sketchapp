@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { PlayIcon } from "@heroicons/react/24/solid";
-import { PopupBase } from "./PopupBase";
-import { SelectDropdown } from "./SelectDropdown";
-import { Logo } from "./Logo";
-import { timerOptions, type TimerOption } from "../hooks/useTimer";
-import { categoryOptions } from "../services/api";
-import type { ImageCategory } from "../services/api";
+import { PopupBase } from "./PopupBase.tsx";
+import { SelectDropdown } from "./SelectDropdown.tsx";
+import { Logo } from "./Logo.tsx";
+import { timerOptions, type TimerOption } from "../hooks/useTimer.ts";
+import { categoryOptions } from "../services/api.ts";
+import type { ImageCategory } from "../services/api.ts";
 
 // Timer-Optionen als SelectDropdown-Format
 const timerDropdownOptions = timerOptions.map(t => ({ value: t, label: t.label }));
@@ -61,6 +61,7 @@ export function WelcomePopup({
         </div>
 
         <button
+          type="button"
           onClick={() => onStart(selectedTimer, selectedCategory)}
           className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white py-3 px-6 rounded-lg font-medium transition-colors w-full cursor-pointer"
         >

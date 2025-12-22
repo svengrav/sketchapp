@@ -1,6 +1,6 @@
 import { ClockIcon } from "@heroicons/react/16/solid";
-import { formatTime } from "../hooks/useTimer";
-import { Controls } from "./Controls";
+import { formatTime } from "../hooks/useTimer.ts";
+import { Controls } from "./Controls.tsx";
 
 type ProgressBarProps = {
   progress: number;

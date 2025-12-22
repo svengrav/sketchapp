@@ -1,5 +1,5 @@
 // API Service für SketchApp Backend
-
+//@ts-ignore DENO
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8005";
 
 // Image Categories (von API definiert)

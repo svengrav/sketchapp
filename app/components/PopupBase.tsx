@@ -66,6 +66,7 @@ export function PopupBase({
             )}
             {onClose && (
               <button
+                type="button"
                 onClick={onClose}
                 className="text-white/60 hover:text-white p-1 cursor-pointer"
               >

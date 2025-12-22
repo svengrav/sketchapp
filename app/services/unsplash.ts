@@ -1,4 +1,5 @@
 // Unsplash API Service
+//@ts-ignore DENO specific
 const UNSPLASH_ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 const UNSPLASH_API = "https://api.unsplash.com";
 

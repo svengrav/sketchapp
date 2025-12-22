@@ -2,6 +2,8 @@
 // SketchApp API - Deno Server mit Azure Table Storage
 // ============================================
 
+import { serveStaticFile } from "./util/routeStaticFilesFrom.ts";
+
 const UNSPLASH_ACCESS_KEY = Deno.env.get("UNSPLASH_ACCESS_KEY") || "";
 const AZURE_STORAGE_CONNECTION_STRING = Deno.env.get("AZURE_STORAGE_CONNECTION_STRING") || "";
 const PORT = parseInt(Deno.env.get("PORT") || "8000");
@@ -344,6 +346,19 @@ async function handleRequest(req: Request): Promise<Response> {
   // CORS Preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders() });
+  }
+
+  // Try to serve static files first (for the built React app)
+  // Only in certain environments or if explicitly enabled
+  if (Deno.env.get("SERVE_STATIC") === "true" || Deno.env.get("NODE_ENV") === "production") {
+    const staticDirs = [
+      `${Deno.cwd()}/../app/dist`,
+      `${Deno.cwd()}/../app/public`,
+    ];
+    const staticResponse = await serveStaticFile(staticDirs, url);
+    if (staticResponse) {
+      return staticResponse;
+    }
   }
 
   // GET /api/image - Bild holen (API first, dann Cache)

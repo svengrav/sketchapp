@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run --watch --allow-net --allow-read --allow-write --allow-env --env main.ts",
+    "dev": "deno run --watch -A --env-file main.ts",
     "start": "deno run --allow-net --allow-read --allow-write --allow-env --env main.ts",
     "refill": "deno run --allow-net --allow-read --allow-write --allow-env --env -e \"const r = await fetch('http://localhost:8000/api/cache/refill', {method:'POST'}); console.log(await r.json())\""
   },

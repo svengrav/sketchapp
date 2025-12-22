@@ -1,0 +1,19 @@
+{
+  "workspace": ["./app", "./api"],
+  "tasks": {
+    "dev":  "cd ./api && deno task dev & cd ./app && deno run -A npm:vite",
+    "dev:app": "cd ./app && deno run -A npm:vite",
+    "dev:api": "deno run -A --watch ./api/main.ts",
+    "build": "cd ./app && deno run -A npm:vite build",
+    "serve": "cd ./app && deno run -A npm:vite build & SERVE_STATIC=true deno run -A api/main.ts",
+    "start": "deno run -A api/main.ts",
+    "test": "deno test -A api/test.ts",
+    "migrate": "deno run -A api/scripts/migrate-cosmos-to-table.ts"
+  },
+  "imports": {
+    "@env": "./env.ts",
+    "clsx": "npm:clsx@^2.1.1",
+    "react": "npm:react@^19.2.3"
+  },
+  "nodeModulesDir": "auto"
+}

@@ -1,6 +1,6 @@
-import { APP_VERSION, GITHUB_URL } from "../env";
-import { Logo } from "./Logo";
-import { PopupBase } from "./PopupBase";
+import { APP_VERSION, GITHUB_URL } from "../env.ts";
+import { Logo } from "./Logo.tsx";
+import { PopupBase } from "./PopupBase.tsx";
 
 type InfoPopupProps = {
   isOpen: boolean;

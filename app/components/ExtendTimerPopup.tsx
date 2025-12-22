@@ -1,5 +1,5 @@
 import { ClockIcon, ForwardIcon, PlusIcon } from "@heroicons/react/24/solid";
-import { PopupBase } from "./PopupBase";
+import { PopupBase } from "./PopupBase.tsx";
 
 type ExtendTimerPopupProps = {
   isOpen: boolean;
@@ -28,6 +28,7 @@ export function ExtendTimerPopup({
 
         <div className="flex flex-col gap-3">
           <button
+            type="button"
             onClick={onExtend}
             className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white py-3 px-4 rounded-lg font-medium transition-colors cursor-pointer"
           >
@@ -36,6 +37,7 @@ export function ExtendTimerPopup({
           </button>
           
           <button
+            type="button"
             onClick={onSkip}
             className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white/80 py-3 px-4 rounded-lg transition-colors cursor-pointer"
           >

@@ -6,8 +6,8 @@ import {
   Squares2X2Icon,
 } from "@heroicons/react/24/solid";
 import clsx from "clsx";
-import { SettingsButton } from "./SettingsPopup";
-import { usePlaybackControls, useSettingsPopup, useQuickExtend, getExtensionSeconds, useGridOverlay } from "../stores/useAppStore";
+import { SettingsButton } from "./SettingsPopup.tsx";
+import { usePlaybackControls, useSettingsPopup, useQuickExtend, getExtensionSeconds, useGridOverlay } from "../stores/useAppStore.ts";
 
 export function Controls() {
   const { isRunning, start, pause, skip } = usePlaybackControls();
@@ -26,6 +26,7 @@ export function Controls() {
     <div className="flex items-center gap-2 bg-zinc-900 px-2 rounded-md w-min border border-zinc-700">
       {/* Start/Pause Button */}
       <button
+        type="button"
         onClick={isRunning ? pause : start}
         className=" text-white p-1 rounded-sm transition-colors cursor-pointer"
         title={isRunning ? "Pause" : "Start"}
@@ -39,6 +40,7 @@ export function Controls() {
 
       {/* Skip Button */}
       <button
+        type="button"
         onClick={skip}
         className=" text-white p-2 transition-colors cursor-pointer"
         title="Next Image"
@@ -48,6 +50,7 @@ export function Controls() {
 
       {/* Quick Extend Button */}
       <button
+        type="button"
         onClick={handleQuickExtend}
         className="flex items-center gap-1 text-white p-2 transition-colors cursor-pointer text-sm "
         title={`Add ${extensionMinutes} minute${extensionMinutes > 1 ? 's' : ''}`}
@@ -57,6 +60,7 @@ export function Controls() {
 
       {/* Grid Toggle Button */}
       <button
+        type="button" 
         onClick={toggleGrid}
         className={clsx(
           "text-white p-2 transition-colors cursor-pointer",

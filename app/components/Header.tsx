@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import { Logo } from "./Logo";
-import { InfoPopup } from "./InfoPopup";
+import { Logo } from "./Logo.tsx";
+import { InfoPopup } from "./InfoPopup.tsx";
 
 export function Header() {
   const [infoOpen, setInfoOpen] = useState(false);
@@ -14,7 +14,7 @@ export function Header() {
           <Logo classNames="w-6 h-6" />
           <span>Sketch App</span>
         </div>
-        <button onClick={() => setInfoOpen(true)}>
+        <button type="button" onClick={() => setInfoOpen(true)}>
           <InformationCircleIcon className="w-7 h-7 text-white/50 hover:text-white/80 transition-colors" />
         </button>
       </header>

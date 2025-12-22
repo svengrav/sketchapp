@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
-import { fetchRandomImage } from "../services/api";
-import type { SketchImage, ImageCategory } from "../services/api";
+import { fetchRandomImage } from "../services/api.ts";
+import type { SketchImage, ImageCategory } from "../services/api.ts";
 
 export type TimerOption = {
   label: string;
@@ -17,6 +17,7 @@ export const timerOptions: TimerOption[] = [
 ];
 
 // Demo-Mode über ENV steuern
+//@ts-ignore DENO
 const USE_DEMO_MODE = import.meta.env.VITE_USE_DEMO_MODE === "true";
 
 const DEMO_IMAGE: SketchImage = {

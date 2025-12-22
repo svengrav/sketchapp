@@ -1,5 +1,5 @@
 import { CameraIcon, MapPinIcon } from "@heroicons/react/24/solid";
-import type { SketchImage } from "../services/api";
+import type { SketchImage } from "../services/api.ts";
 
 type FooterProps = {
   image: SketchImage;

@@ -3,19 +3,6 @@ import { useShallow } from "zustand/react/shallow";
 import { fetchRandomImage } from "../services/api.ts";
 import type { SketchImage, ImageCategory } from "../services/api.ts";
 
-export type TimerOption = {
-  label: string;
-  seconds: number;
-};
-
-export const timerOptions: TimerOption[] = [
-  { label: "1 Min", seconds: 60 },
-  { label: "3 Min", seconds: 180 },
-  { label: "5 Min", seconds: 300 },
-  { label: "10 Min", seconds: 600 },
-  { label: "15 Min", seconds: 900 },
-];
-
 // Demo-Mode über ENV steuern
 //@ts-ignore DENO
 const USE_DEMO_MODE = import.meta.env.VITE_USE_DEMO_MODE === "true";
@@ -28,23 +15,6 @@ const DEMO_IMAGE: SketchImage = {
   photographerUrl: "https://unsplash.com",
   category: "cities",
 };
-
-interface TimerState {
-  isRunning: boolean;
-  timeLeft: number;
-  totalDuration: number;
-  selectedTimer: TimerOption;
-  progress: number;
-}
-
-interface TimerActions {
-  start: () => void;
-  pause: () => void;
-  reset: () => void;
-  extend: (seconds: number) => void;
-  setDuration: (option: TimerOption) => void;
-  tick: () => boolean; // Returns true if timer completed
-}
 
 interface ImageState {
   currentImage: SketchImage | null;
@@ -61,92 +31,28 @@ interface ImageActions {
 
 interface UIState {
   settingsOpen: boolean;
-  extendPopupOpen: boolean;
   showEdges: boolean;
   edgeOpacity: number;
   showGrid: boolean;
   gridSize: number;
   gridOpacity: number;
+  gridColor: string;
 }
 
 interface UIActions {
   openSettings: () => void;
   closeSettings: () => void;
-  openExtendPopup: () => void;
-  closeExtendPopup: () => void;
   toggleEdges: () => void;
   setEdgeOpacity: (opacity: number) => void;
   toggleGrid: () => void;
   setGridSize: (size: number) => void;
   setGridOpacity: (opacity: number) => void;
+  setGridColor: (color: string) => void;
 }
 
-export interface AppStore extends TimerState, TimerActions, ImageState, ImageActions, UIState, UIActions {}
-
-const defaultTimer = timerOptions[2]; // 5 Min
-
-/** Berechnet die Extension-Dauer basierend auf der Gesamt-Zeit */
-export function getExtensionSeconds(totalSeconds: number): number {
-  if (totalSeconds >= 600) return 300; // 10+ Min → +5 Min
-  return 60; // Sonst → +1 Min
-}
+export interface AppStore extends ImageState, ImageActions, UIState, UIActions {}
 
 export const useAppStore = create<AppStore>((set, get) => ({
-  // Timer State
-  isRunning: false,
-  timeLeft: defaultTimer.seconds,
-  totalDuration: defaultTimer.seconds,
-  selectedTimer: defaultTimer,
-  get progress() {
-    const { totalDuration, timeLeft } = get();
-    return ((totalDuration - timeLeft) / totalDuration) * 100;
-  },
-
-  // Timer Actions
-  start: () => set({ isRunning: true }),
-  pause: () => set({ isRunning: false }),
-  
-  reset: () => {
-    const { selectedTimer } = get();
-    set({
-      timeLeft: selectedTimer.seconds,
-      totalDuration: selectedTimer.seconds,
-      isRunning: false,
-    });
-  },
-
-  extend: (seconds: number) => {
-    const { timeLeft } = get();
-    const newTime = timeLeft + seconds;
-    set({
-      timeLeft: newTime,
-      totalDuration: newTime,
-      isRunning: true,
-    });
-  },
-
-  setDuration: (option: TimerOption) => {
-    set({
-      selectedTimer: option,
-      timeLeft: option.seconds,
-      totalDuration: option.seconds,
-      isRunning: false,
-    });
-  },
-
-  tick: () => {
-    const { timeLeft, selectedTimer } = get();
-    if (timeLeft <= 1) {
-      set({
-        timeLeft: selectedTimer.seconds,
-        totalDuration: selectedTimer.seconds,
-      });
-      return true; // Timer completed
-    }
-    set({ timeLeft: timeLeft - 1 });
-    return false;
-  },
-
   // Image State
   currentImage: USE_DEMO_MODE ? DEMO_IMAGE : null,
   isImageLoading: false,
@@ -176,15 +82,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   skip: () => {
-    const { selectedTimer, isRunning, loadNewImage } = get();
-    // Reset timer
-    set({
-      timeLeft: selectedTimer.seconds,
-      totalDuration: selectedTimer.seconds,
-      isRunning: isRunning, // Keep running state
-    });
-    // Load new image
-    loadNewImage();
+    // Just load new image, timer is managed by useTimerStore
+    const { loadNewImage, category } = get();
+    loadNewImage(category);
   },
 
   setCategory: (category: ImageCategory) => {
@@ -193,62 +93,27 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   // UI State
   settingsOpen: false,
-  extendPopupOpen: false,
   showEdges: false,
   edgeOpacity: 0.6,
   showGrid: false,
   gridSize: 3,
   gridOpacity: 0.5,
+  gridColor: "#ffffff",
 
   // UI Actions
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
-  openExtendPopup: () => set({ extendPopupOpen: true }),
-  closeExtendPopup: () => set({ extendPopupOpen: false }),
   toggleEdges: () => set((state) => ({ showEdges: !state.showEdges })),
   setEdgeOpacity: (opacity: number) => set({ edgeOpacity: opacity }),
   toggleGrid: () => set((state) => ({ showGrid: !state.showGrid })),
   setGridSize: (size: number) => set({ gridSize: size }),
   setGridOpacity: (opacity: number) => set({ gridOpacity: opacity }),
+  setGridColor: (color: string) => set({ gridColor: color }),
 }));
-
-// ============================================
-// Selector für Progress (computed value)
-// ============================================
-export const selectProgress = (state: AppStore) => 
-  ((state.totalDuration - state.timeLeft) / state.totalDuration) * 100;
 
 // ============================================
 // Use-Case Helper Hooks
 // ============================================
-
-/** Hook für Playback-Controls (Play/Pause/Skip) */
-export function usePlaybackControls() {
-  return useAppStore(useShallow((state) => ({
-    isRunning: state.isRunning,
-    start: state.start,
-    pause: state.pause,
-    skip: state.skip,
-  })));
-}
-
-/** Hook für Timer-Anzeige */
-export function useTimerDisplay() {
-  return useAppStore(useShallow((state) => ({
-    timeLeft: state.timeLeft,
-    progress: selectProgress(state),
-    isRunning: state.isRunning,
-  })));
-}
-
-/** Hook für Timer-Konfiguration */
-export function useTimerConfig() {
-  return useAppStore(useShallow((state) => ({
-    selectedTimer: state.selectedTimer,
-    setDuration: state.setDuration,
-    extend: state.extend,
-  })));
-}
 
 /** Hook für Image-Anzeige */
 export function useImageDisplay() {
@@ -278,16 +143,6 @@ export function useSettingsPopup() {
   })));
 }
 
-/** Hook für Extend-Timer-Popup */
-export function useExtendPopup() {
-  return useAppStore(useShallow((state) => ({
-    isOpen: state.extendPopupOpen,
-    open: state.openExtendPopup,
-    close: state.closeExtendPopup,
-    extend: state.extend,
-  })));
-}
-
 /** Hook für Edge Overlay */
 export function useEdgeOverlay() {
   return useAppStore(useShallow((state) => ({
@@ -298,22 +153,16 @@ export function useEdgeOverlay() {
   })));
 }
 
-/** Hook für Quick-Extend Button */
-export function useQuickExtend() {
-  return useAppStore(useShallow((state) => ({
-    selectedTimer: state.selectedTimer,
-    extend: state.extend,
-  })));
-}
-
 /** Hook für Grid Overlay */
 export function useGridOverlay() {
   return useAppStore(useShallow((state) => ({
     showGrid: state.showGrid,
     gridSize: state.gridSize,
     opacity: state.gridOpacity,
+    color: state.gridColor,
     toggle: state.toggleGrid,
     setSize: state.setGridSize,
     setOpacity: state.setGridOpacity,
+    setColor: state.setGridColor,
   })));
 }

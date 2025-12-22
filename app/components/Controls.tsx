@@ -7,20 +7,20 @@ import {
 } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import { SettingsButton } from "./SettingsPopup.tsx";
-import { usePlaybackControls, useSettingsPopup, useQuickExtend, getExtensionSeconds, useGridOverlay } from "../stores/useAppStore.ts";
+import { useImageControls } from "../hooks/useImageControls.ts";
 
 export function Controls() {
-  const { isRunning, start, pause, skip } = usePlaybackControls();
-  const { open: openSettings } = useSettingsPopup();
-  const { selectedTimer, extend } = useQuickExtend();
-  const { showGrid, toggle: toggleGrid } = useGridOverlay();
-
-  const extensionSeconds = getExtensionSeconds(selectedTimer.seconds);
-  const extensionMinutes = extensionSeconds / 60;
-
-  const handleQuickExtend = () => {
-    extend(extensionSeconds);
-  };
+  const {
+    isRunning,
+    start,
+    pause,
+    skip,
+    quickExtend,
+    extensionMinutes,
+    showGrid,
+    toggleGrid,
+    openSettings,
+  } = useImageControls();
 
   return (
     <div className="flex items-center gap-2 bg-zinc-900 px-2 rounded-md w-min border border-zinc-700">
@@ -51,7 +51,7 @@ export function Controls() {
       {/* Quick Extend Button */}
       <button
         type="button"
-        onClick={handleQuickExtend}
+        onClick={quickExtend}
         className="flex items-center gap-1 text-white p-2 transition-colors cursor-pointer text-sm "
         title={`Add ${extensionMinutes} minute${extensionMinutes > 1 ? 's' : ''}`}
       >

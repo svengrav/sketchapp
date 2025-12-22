@@ -29,7 +29,7 @@ type ImageDisplayProps = {
 
 export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading }: ImageDisplayProps) {
   const { showEdges, opacity } = useEdgeOverlay();
-  const { showGrid, gridSize, opacity: gridOpacity } = useGridOverlay();
+  const { showGrid, gridSize, opacity: gridOpacity, color: gridColor } = useGridOverlay();
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-linear-to-t from-black bg-zinc-950 p-2">
@@ -82,7 +82,7 @@ export function ImageDisplay({ imageUrl, imageAlt, imageId, imageMode, isLoading
               <EdgeOverlay imageUrl={imageUrl} opacity={opacity} />
             )}
             {showGrid && (
-              <GridOverlay gridSize={gridSize} opacity={gridOpacity} />
+              <GridOverlay gridSize={gridSize} opacity={gridOpacity} color={gridColor} />
             )}
           </div>
         </TransformComponent>

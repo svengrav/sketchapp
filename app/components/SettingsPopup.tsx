@@ -7,7 +7,7 @@ import type { ImageMode } from "./ImageDisplay.tsx";
 import { imageModes } from "./ImageDisplay.tsx";
 import { categoryOptions } from "../services/api.ts";
 import type { ImageCategory } from "../services/api.ts";
-import { useEdgeOverlay } from "../stores/useAppStore.ts";
+import { useEdgeOverlay, useGridOverlay } from "../stores/useAppStore.ts";
 import { PopupBase } from "./PopupBase.tsx";
 import { SelectDropdown } from "./SelectDropdown.tsx";
 
@@ -35,6 +35,9 @@ export function SettingsPopup({
 }: SettingsPopupProps) {
   // Edge overlay state (directly from store, not part of save flow)
   const { showEdges, opacity, toggle: toggleEdges, setOpacity } = useEdgeOverlay();
+  
+  // Grid overlay state (directly from store, not part of save flow)
+  const { showGrid, gridSize, opacity: gridOpacity, color: gridColor, toggle: toggleGrid, setSize: setGridSize, setOpacity: setGridOpacity, setColor: setGridColor } = useGridOverlay();
 
   // Local state for editing
   const [localTimer, setLocalTimer] = useState(selectedTimer);
@@ -160,6 +163,91 @@ export function SettingsPopup({
               onChange={(e) => setOpacity(parseFloat(e.target.value))}
               className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
             />
+          </div>
+        )}
+      </div>
+
+      {/* Grid Overlay Section */}
+      <div className="mb-6">
+        <button
+          type="button"
+          onClick={toggleGrid}
+          className={clsx(
+            "w-full py-3 px-4 text-sm rounded-lg transition-colors flex items-center justify-between cursor-pointer mb-3",
+            showGrid
+              ? "bg-indigo-600 text-white"
+              : "bg-zinc-800 text-white/80 hover:bg-zinc-700"
+          )}
+        >
+          <span>Show Grid Overlay</span>
+          <span className={clsx(
+            "w-10 h-6 rounded-full relative transition-colors",
+            showGrid ? "bg-indigo-400" : "bg-zinc-600"
+          )}>
+            <span className={clsx(
+              "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
+              showGrid ? "left-5" : "left-1"
+            )} />
+          </span>
+        </button>
+        
+        {showGrid && (
+          <div className="space-y-3">
+            {/* Grid Size Slider */}
+            <div>
+              <div className="flex justify-between text-xs text-white/50 mb-1">
+                <span>Grid Size</span>
+                <span>{gridSize}×{gridSize}</span>
+              </div>
+              <input
+                type="range"
+                min="2"
+                max="10"
+                step="1"
+                value={gridSize}
+                onChange={(e) => setGridSize(parseInt(e.target.value))}
+                className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+              />
+            </div>
+            
+            {/* Grid Opacity Slider */}
+            <div>
+              <div className="flex justify-between text-xs text-white/50 mb-1">
+                <span>Grid Opacity</span>
+                <span>{Math.round(gridOpacity * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.1"
+                value={gridOpacity}
+                onChange={(e) => setGridOpacity(parseFloat(e.target.value))}
+                className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+              />
+            </div>
+            
+            {/* Grid Color */}
+            <div>
+              <div className="flex justify-between text-xs text-white/50 mb-1">
+                <span>Grid Color</span>
+              </div>
+              <div className="flex gap-2">
+                {["#ffffff", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"].map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => setGridColor(color)}
+                    className={clsx(
+                      "w-8 h-8 rounded-lg border-2 transition-all cursor-pointer",
+                      gridColor === color ? "border-white scale-110" : "border-zinc-600 hover:border-zinc-400"
+                    )}
+                    style={{ backgroundColor: color }}
+                    title={color}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>

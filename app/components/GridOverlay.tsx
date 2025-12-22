@@ -63,7 +63,7 @@ type GridOverlayProps = {
 export function GridOverlay({ 
   gridSize = 3, 
   opacity = 0.5, 
-  color = "white" 
+  color = "#ffffff" 
 }: GridOverlayProps) {
   return (
     <div

@@ -27,6 +27,10 @@ export function useImageControls() {
     showGrid,
     toggleGrid,
     loadNewImage,
+    goBack,
+    goForward,
+    imageHistory,
+    historyIndex,
   } = useAppStore();
 
   // Calculate extension time based on current timer duration
@@ -63,6 +67,12 @@ export function useImageControls() {
     // Quick extend
     quickExtend,
     extensionMinutes,
+
+    // Navigation
+    goBack,
+    goForward,
+    canGoBack: historyIndex > 0,
+    canGoForward: historyIndex < imageHistory.length - 1,
 
     // Grid controls
     showGrid,

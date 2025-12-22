@@ -21,12 +21,17 @@ interface ImageState {
   isImageLoading: boolean;
   imageError: string | null;
   category: ImageCategory;
+  imageHistory: SketchImage[];
+  historyIndex: number;
 }
 
 interface ImageActions {
   loadNewImage: (category?: ImageCategory, customQuery?: string) => Promise<void>;
   skip: () => void;
   setCategory: (category: ImageCategory) => void;
+  goBack: () => void;
+  goForward: () => void;
+  addImageToHistory: (image: SketchImage) => void;
 }
 
 interface UIState {
@@ -58,6 +63,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
   isImageLoading: false,
   imageError: null,
   category: "cities" as ImageCategory,
+  imageHistory: USE_DEMO_MODE ? [DEMO_IMAGE] : [],
+  historyIndex: USE_DEMO_MODE ? 0 : -1,
 
   // Image Actions
   loadNewImage: async (overrideCategory?: ImageCategory, customQuery?: string) => {
@@ -83,7 +90,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
         image = await fetchRandomImage(currentImage?.id, cat);
       }
       console.log("Image loaded:", image);
-      set({ currentImage: image, isImageLoading: false });
+      
+      // Add to history instead of setting directly
+      get().addImageToHistory(image);
+      set({ isImageLoading: false });
     } catch (err) {
       console.error("Failed to load image:", err);
       set({ 
@@ -94,13 +104,59 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   skip: () => {
-    // Just load new image, timer is managed by useTimerStore
-    const { loadNewImage, category } = get();
-    loadNewImage(category);
+    // Load new image and add to history
+    const { loadNewImage } = get();
+    loadNewImage();
   },
 
   setCategory: (category: ImageCategory) => {
     set({ category });
+  },
+
+  addImageToHistory: (image: SketchImage) => {
+    const { imageHistory, historyIndex } = get();
+    
+    // If we're not at the end of history, remove everything after current index
+    const newHistory = imageHistory.slice(0, historyIndex + 1);
+    
+    // Add new image
+    newHistory.push(image);
+    
+    // Maintain max 10 images (FIFO)
+    if (newHistory.length > 10) {
+      newHistory.shift();
+    }
+    
+    set({
+      imageHistory: newHistory,
+      historyIndex: newHistory.length - 1,
+      currentImage: image,
+    });
+  },
+
+  goBack: () => {
+    const { imageHistory, historyIndex } = get();
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      set({
+        historyIndex: newIndex,
+        currentImage: imageHistory[newIndex],
+      });
+    }
+  },
+
+  goForward: () => {
+    const { imageHistory, historyIndex } = get();
+    if (historyIndex < imageHistory.length - 1) {
+      const newIndex = historyIndex + 1;
+      set({
+        historyIndex: newIndex,
+        currentImage: imageHistory[newIndex],
+      });
+    } else {
+      // At end of history, load new image
+      get().loadNewImage();
+    }
   },
 
   // UI State
@@ -143,6 +199,12 @@ export function useImageActions() {
     skip: state.skip,
     setCategory: state.setCategory,
     category: state.category,
+    goBack: state.goBack,
+    goForward: state.goForward,
+    imageHistory: state.imageHistory,
+    historyIndex: state.historyIndex,
+    canGoBack: state.historyIndex > 0,
+    canGoForward: state.historyIndex < state.imageHistory.length - 1,
   })));
 }
 

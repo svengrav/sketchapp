@@ -4,6 +4,8 @@ import {
   ForwardIcon,
   PlusCircleIcon,
   Squares2X2Icon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import { SettingsButton } from "./SettingsPopup.tsx";
@@ -20,10 +22,28 @@ export function Controls() {
     showGrid,
     toggleGrid,
     openSettings,
+    goBack,
+    goForward,
+    canGoBack,
+    canGoForward,
   } = useImageControls();
 
   return (
     <div className="flex items-center gap-2 bg-zinc-900 px-2 rounded-md w-min border border-zinc-700">
+      {/* Back Button */}
+      <button
+        type="button"
+        onClick={goBack}
+        disabled={!canGoBack}
+        className={clsx(
+          "text-white p-1 rounded-sm transition-colors cursor-pointer",
+          !canGoBack && "opacity-40 cursor-not-allowed"
+        )}
+        title="Previous Image"
+      >
+        <ChevronLeftIcon className="w-5 h-5" />
+      </button>
+
       {/* Start/Pause Button */}
       <button
         type="button"
@@ -38,14 +58,18 @@ export function Controls() {
         )}
       </button>
 
-      {/* Skip Button */}
+      {/* Forward/Skip Button */}
       <button
         type="button"
-        onClick={skip}
+        onClick={canGoForward ? goForward : skip}
         className=" text-white p-2 transition-colors cursor-pointer"
-        title="Next Image"
+        title={canGoForward ? "Next Image" : "New Image"}
       >
-        <ForwardIcon className="w-5 h-5" />
+        {canGoForward ? (
+          <ChevronRightIcon className="w-5 h-5" />
+        ) : (
+          <ForwardIcon className="w-5 h-5" />
+        )}
       </button>
 
       {/* Quick Extend Button */}

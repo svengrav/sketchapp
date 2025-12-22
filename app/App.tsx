@@ -1,5 +1,9 @@
-import { useEffect, useCallback } from "react";
-import { useAppStore, selectProgress, timerOptions } from "./stores/useAppStore.ts";
+import { useCallback, useEffect } from "react";
+import {
+  selectProgress,
+  timerOptions,
+  useAppStore,
+} from "./stores/useAppStore.ts";
 import { useSettings } from "./hooks/useSettings.ts";
 import { ImageDisplay } from "./components/ImageDisplay.tsx";
 import { Header } from "./components/Header.tsx";
@@ -14,7 +18,7 @@ const EXTEND_MINUTES = 2;
 
 function App() {
   const { settings, saveSettings } = useSettings();
-  
+
   // Store state & actions
   const {
     isRunning,
@@ -37,7 +41,7 @@ function App() {
     openExtendPopup,
     closeExtendPopup,
   } = useAppStore();
-  
+
   const progress = useAppStore(selectProgress);
 
   // Sync category from settings to store on mount and when settings change
@@ -68,32 +72,61 @@ function App() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, settings.showExtendPrompt, loadNewImage, tick, openExtendPopup]);
+  }, [
+    isRunning,
+    settings.showExtendPrompt,
+    loadNewImage,
+    tick,
+    openExtendPopup,
+  ]);
 
   // Initialize timer from settings
   useEffect(() => {
-    const timerOption = timerOptions.find(t => t.seconds === settings.timerSeconds);
+    const timerOption = timerOptions.find((t) =>
+      t.seconds === settings.timerSeconds
+    );
     if (timerOption && timerOption.seconds !== selectedTimer.seconds) {
       setDuration(timerOption);
     }
   }, []); // Only on mount
 
-  const handleSaveSettings = useCallback((newSettings: { timerSeconds: number; imageMode: typeof settings.imageMode; showExtendPrompt: boolean; category: typeof settings.category, hasSeenWelcome:boolean}) => {
-    const categoryChanged = newSettings.category !== settings.category;
-    saveSettings(newSettings);
-    setCategory(newSettings.category);
-    
-    // Update timer duration if changed
-    const timerOption = timerOptions.find(t => t.seconds === newSettings.timerSeconds);
-    if (timerOption && timerOption.seconds !== selectedTimer.seconds) {
-      setDuration(timerOption);
-    }
-    // Reload image and reset timer if category changed
-    if (categoryChanged) {
-      loadNewImage(newSettings.category);
-      reset(); // Reset timer & progress
-    }
-  }, [settings.category, saveSettings, selectedTimer.seconds, setDuration, setCategory, loadNewImage, reset]);
+  const handleSaveSettings = useCallback(
+    (
+      newSettings: {
+        timerSeconds: number;
+        imageMode: typeof settings.imageMode;
+        showExtendPrompt: boolean;
+        category: typeof settings.category;
+        hasSeenWelcome: boolean;
+      },
+    ) => {
+      const categoryChanged = newSettings.category !== settings.category;
+      saveSettings(newSettings);
+      setCategory(newSettings.category);
+
+      // Update timer duration if changed
+      const timerOption = timerOptions.find((t) =>
+        t.seconds === newSettings.timerSeconds
+      );
+      if (timerOption && timerOption.seconds !== selectedTimer.seconds) {
+        setDuration(timerOption);
+      }
+      // Reload image and reset timer if category changed
+      if (categoryChanged) {
+        loadNewImage(newSettings.category);
+        reset(); // Reset timer & progress
+      }
+    },
+    [
+      settings.category,
+      saveSettings,
+      selectedTimer.seconds,
+      setDuration,
+      setCategory,
+      loadNewImage,
+      reset,
+    ],
+  );
 
   const handleExtend = useCallback(() => {
     closeExtendPopup();
@@ -148,7 +181,7 @@ function App() {
               isLoading={isImageLoading}
             />
           </main>
-                    <ProgressBar progress={progress} timeLeft={timeLeft} />
+          <ProgressBar progress={progress} timeLeft={timeLeft} />
 
           <Footer
             image={currentImage}
@@ -178,8 +211,8 @@ function App() {
             initialTimer={selectedTimer}
             initialCategory={settings.category}
             onStart={(timer, category) => {
-              saveSettings({ 
-                ...settings, 
+              saveSettings({
+                ...settings,
                 hasSeenWelcome: true,
                 timerSeconds: timer.seconds,
                 category: category,

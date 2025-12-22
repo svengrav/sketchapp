@@ -5,6 +5,7 @@
     "refill": "deno run --allow-net --allow-read --allow-write --allow-env --env -e \"const r = await fetch('http://localhost:8000/api/cache/refill', {method:'POST'}); console.log(await r.json())\""
   },
   "imports": {
+    "@azure/data-tables": "npm:@azure/data-tables@^13.3.2",
     "@std/assert": "jsr:@std/assert@1"
   }
 }

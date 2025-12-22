@@ -4,7 +4,7 @@
     {
       "label": "Deploy App",
       "type": "shell",
-      "command": "./docker.bash",
+      "command": "./deploy.bash",
       "options": {
         "cwd": "${workspaceFolder}",
       },

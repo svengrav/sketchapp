@@ -3,6 +3,8 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { Logo } from "./Logo.tsx";
 import { InfoPopup } from "./InfoPopup.tsx";
 
+
+
 export function Header() {
   const [infoOpen, setInfoOpen] = useState(false);
 

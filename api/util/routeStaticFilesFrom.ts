@@ -1,8 +1,26 @@
 /**
- * Static File Serving Utility
+ * Static File Serving Utility for Oak
  * Serves static files from specified directories (typically the built React app)
  */
 
+import { Context, Next } from "jsr:@oak/oak";
+
+export default function routeStaticFilesFrom(staticPaths: string[]) {
+  return async (context: Context<Record<string, object>>, next: Next) => {
+    for (const path of staticPaths) {
+      try {
+        await context.send({ root: path, index: "index.html" });
+        return;
+      } catch {
+        continue;
+      }
+    }
+
+    await next();
+  };
+}
+
+// Legacy export for backward compatibility if needed
 export async function serveStaticFile(
   staticPaths: string[],
   url: URL,

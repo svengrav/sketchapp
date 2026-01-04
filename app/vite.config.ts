@@ -7,6 +7,16 @@ import deno from "@deno/vite-plugin";
 // https://vite.dev/config/
 export default defineConfig({
   base: '/sketch/',
+  server: {
+    port: 15173,
+    proxy: {
+      '/sketch/api': {
+        target: 'http://localhost:8060',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/sketch/, ''),
+      },
+    },
+  },
   plugins: [
     deno(),
     react(),

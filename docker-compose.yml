@@ -1,24 +1,32 @@
 services:
-  # API - Deno Backend
   sketch:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: app
+    networks:
+      - app-network
     ports:
-      - "8060:8000"
+      - "8060:8060"
     environment:
-      # Enable static file serving
+      - UNSPLASH_ACCESS_KEY=${UNSPLASH_ACCESS_KEY}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
       - SERVE_STATIC=true
-      - PORT=8000
+      - PORT=8060
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G          # Max 1GB RAM
+          cpus: '1.0'         # Max 1 CPU Core
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/status"]
+      test: ["CMD", "deno", "eval", "const resp = await fetch('http://localhost:8000/health'); console.log(resp.status); Deno.exit(resp.ok ? 0 : 1)"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
+
 networks:
-  luna-ai-network:
-    external: true
+  app-network:
+    driver: bridge

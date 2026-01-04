@@ -6,6 +6,8 @@
   },
   "imports": {
     "@azure/data-tables": "npm:@azure/data-tables@^13.3.2",
-    "@std/assert": "jsr:@std/assert@1"
+    "@oak/oak": "jsr:@oak/oak@^17.2.0",
+    "@std/assert": "jsr:@std/assert@1",
+    "@tajpouria/cors": "jsr:@tajpouria/cors@^1.2.1"
   }
 }

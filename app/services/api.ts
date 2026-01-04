@@ -1,6 +1,7 @@
 // API Service für SketchApp Backend
 //@ts-ignore DENO
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8005";
+// 
+const API_BASE = "/sketch/api";
 
 // Image Categories (von API definiert)
 export type ImageCategory = "cities" | "landscapes" | "people" | "animals";
@@ -29,7 +30,7 @@ export type CategoriesResponse = {
 };
 
 export async function fetchCategories(): Promise<CategoriesResponse> {
-  const response = await fetch(`${API_BASE}/api/categories`);
+  const response = await fetch(`${API_BASE}/categories`);
   
   if (!response.ok) {
     throw new Error(`API error: ${response.status}`);
@@ -44,7 +45,7 @@ export async function fetchRandomImage(excludeId?: string, category?: ImageCateg
   if (category) params.set("category", category);
   
   const queryString = params.toString();
-  const url = `${API_BASE}/api/image${queryString ? `?${queryString}` : ""}`;
+  const url = `${API_BASE}/image${queryString ? `?${queryString}` : ""}`;
   
   const response = await fetch(url);
   
@@ -59,7 +60,7 @@ export async function fetchImageWithCustomQuery(customQuery: string): Promise<Sk
   const params = new URLSearchParams();
   params.set("query", customQuery);
   
-  const url = `${API_BASE}/api/search?${params.toString()}`;
+  const url = `${API_BASE}/search?${params.toString()}`;
   
   const response = await fetch(url);
   
@@ -75,6 +76,6 @@ export async function getCacheStatus(): Promise<{
   lastFetch: number;
   lastFetchAgo: number;
 }> {
-  const response = await fetch(`${API_BASE}/api/cache/status`);
+  const response = await fetch(`${API_BASE}/cache/status`);
   return response.json();
 }

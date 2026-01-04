@@ -20,7 +20,7 @@ if [ -f "$ENV_FILE" ]; then
 fi
 
 # 1. Nginx Config ins Gateway kopieren
-docker cp nginx/sketch.conf nginx-gateway:/etc/nginx/conf.d/sketch.conf
+cp nginx/sketch.conf /media/data/nginx/conf.d/sketch.conf
 
 # 2. SketchApp Container bauen & starten
 docker compose up --build -d
